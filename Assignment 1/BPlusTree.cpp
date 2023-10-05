@@ -35,4 +35,10 @@ void leafNode::addSibling(leafNode* sibling){
     }
 }
 
+Node* leafNode::changeParent(Node* newParent){
+    Node* oldParent = this->parent;
+    this->parent = newParent;
+    return oldParent;
+}
+
 /*-----------------------------------------------Interior Node---------------------------------------------------*/

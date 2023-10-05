@@ -29,7 +29,7 @@ class leafNode : public Node {
 
         //Setters
         void addSibling(leafNode* sibling);
-        Node* changeParent(Node* newParent);        //Implement
+        Node* changeParent(Node* newParent);        
 };
 
 class interiorNode : public Node {      //Implement
