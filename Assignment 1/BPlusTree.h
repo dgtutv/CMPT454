@@ -29,9 +29,8 @@ class leafNode : public Node {
 
         //Setters
         void addSibling(leafNode* sibling);
-        Node* changeParent(Node* newParent);   
-        Node* removeSibling(leafNode* sibling);     //Implement
-        Node* removeChild(Node* child);     //Implement     
+        Node* changeParent(Node* newParent);        //Changes the parent of the node and returns the old parent
+        Node* removeSibling(leafNode* sibling);     //Removes a sibling of the node and returns a pointer to the sibling upon succession, returns NULL upon failure
 };
 
 class interiorNode : public Node {
