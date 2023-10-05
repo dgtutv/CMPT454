@@ -50,9 +50,9 @@ class interiorNode : public Node {
         //Setters
         void addSibling(interiorNode* sibling);
         void addChild(Node* child);
-        Node* changeParent(Node* newParent);
-        Node* removeSibling(interiorNode* sibling);     //Implement
-        Node* removeChild(Node* child);     //Implement
+        Node* changeParent(Node* newParent);        //Changes the parent of the node and returns the old parent
+        Node* removeSibling(interiorNode* sibling);     //Removes a sibling of the node and returns a pointer to the sibling upon succession, returns NULL upon failure
+        Node* removeChild(Node* child);     //Removes a child of the node and returns a pointer to the child upon succession, returns NULL upon failure
 };
 
 class rootNode : public Node {      //Implement
@@ -67,7 +67,7 @@ class rootNode : public Node {      //Implement
 
         //Setter
         void addChild(Node* child);
-        Node* removeChild(Node* child);
+        Node* removeChild(Node* child);     //Removes a child of the node and returns a pointer to the child upon succession, returns NULL upon failure 
 };
 
 class BPlusTree {

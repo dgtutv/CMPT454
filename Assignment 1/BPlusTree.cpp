@@ -68,3 +68,11 @@ Node* interiorNode::changeParent(Node* newParent){
     this->parent = newParent;
     return oldParent;
 }
+
+Node* interiorNode::removeSibling(interiorNode* sibling){
+    if(find(this->siblings.begin(), this->siblings.end(), sibling) != this->siblings.end()){    //If the node is in the siblings list
+        this->siblings.remove(sibling);      //Remove it
+        return sibling;     //Return a pointer to it
+    }
+    return NULL;
+}
