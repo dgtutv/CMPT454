@@ -29,10 +29,12 @@ class leafNode : public Node {
 
         //Setters
         void addSibling(leafNode* sibling);
-        Node* changeParent(Node* newParent);        
+        Node* changeParent(Node* newParent);   
+        Node* removeSibling(leafNode* sibling);     //Implement
+        Node* removeChild(Node* child);     //Implement     
 };
 
-class interiorNode : public Node {      //Implement
+class interiorNode : public Node {
     private:
         Node* parent;
         list<interiorNode*> siblings;
@@ -50,10 +52,23 @@ class interiorNode : public Node {      //Implement
         void addSibling(interiorNode* sibling);
         void addChild(Node* child);
         Node* changeParent(Node* newParent);
+        Node* removeSibling(interiorNode* sibling);     //Implement
+        Node* removeChild(Node* child);     //Implement
 };
 
-class rootNode : public Node {
+class rootNode : public Node {      //Implement
+    private:
+        list<Node*> children;
+    public:
+        //Constructor
+        rootNode(int key, string value);
 
+        //Getter
+        list<Node*> getChildren() const;
+
+        //Setter
+        void addChild(Node* child);
+        Node* removeChild(Node* child);
 };
 
 class BPlusTree {
