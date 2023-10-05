@@ -28,7 +28,7 @@ class leafNode : public Node {
         list<leafNode*> getSiblings() const;
 
         //Setters
-        void addSibling(leafNode* sibling);
+        leafNode* addSibling(leafNode* sibling);
         Node* changeParent(Node* newParent);        //Changes the parent of the node and returns the old parent
         Node* removeSibling(leafNode* sibling);     //Removes a sibling of the node and returns a pointer to the sibling upon succession, returns NULL upon failure
 };
@@ -48,8 +48,8 @@ class interiorNode : public Node {
         list<Node*> getChildren() const;
 
         //Setters
-        void addSibling(interiorNode* sibling);
-        void addChild(Node* child);
+        interiorNode* addSibling(interiorNode* sibling);
+        Node* addChild(Node* child);
         Node* changeParent(Node* newParent);        //Changes the parent of the node and returns the old parent
         Node* removeSibling(interiorNode* sibling);     //Removes a sibling of the node and returns a pointer to the sibling upon succession, returns NULL upon failure
         Node* removeChild(Node* child);     //Removes a child of the node and returns a pointer to the child upon succession, returns NULL upon failure
@@ -66,7 +66,7 @@ class rootNode : public Node {      //Implement
         list<Node*> getChildren() const;
 
         //Setter
-        void addChild(Node* child);
+        Node* addChild(Node* child);
         Node* removeChild(Node* child);     //Removes a child of the node and returns a pointer to the child upon succession, returns NULL upon failure 
 };
 
@@ -76,5 +76,17 @@ class BPlusTree {
         list<interiorNode*> interiorNodes;
         rootNode* root;
         list<Node*> allNodes;       //Used for memory purposes
+        int maxNumPointers;
     public:
+        //Constructor
+        BPlusTree(int maxNumPointers);
+
+        //Setters     
+        bool insert(int key, string value);
+        bool remove(int key);
+
+        //Getters
+        string find(int key);
+        void printKeys();
+        void printValues();
 };

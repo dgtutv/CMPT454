@@ -28,11 +28,13 @@ list<leafNode*> leafNode::getSiblings() const{
     return this->siblings;
 }
 
-void leafNode::addSibling(leafNode* sibling){
+leafNode* leafNode::addSibling(leafNode* sibling){      //Returns a pointer to the sibling upon succession, returns NULL upon failure
     if(find(this->siblings.begin(), this->siblings.end(), sibling) == this->siblings.end()){   //Check if the node is already one of the siblings
         this->siblings.push_back(sibling);  //If not, add it to the list
         this->siblings.sort(compareNodes);  //Sort the list by node's keys
+        return sibling;
     }
+    return NULL;
 }
 
 Node* leafNode::changeParent(Node* newParent){
@@ -64,11 +66,13 @@ Node* interiorNode::getParent() const{
     return this->parent;
 }
 
-void interiorNode::addSibling(interiorNode* sibling){
+interiorNode* interiorNode::addSibling(interiorNode* sibling){      //Returns a pointer to the sibling upon succession, returns NULL upon failure
     if(find(this->siblings.begin(), this->siblings.end(), sibling) == this->siblings.end()){   //Check if the node is already one of the siblings
         this->siblings.push_back(sibling);  //If not, add it to the list
         this->siblings.sort(compareNodes);  //Sort the list by node's keys
+        return sibling;
     }
+    return NULL;
 }
 
 Node* interiorNode::changeParent(Node* newParent){
@@ -92,11 +96,13 @@ Node* interiorNode::removeChild(Node* child){
     return NULL;
 }
 
-void interiorNode::addChild(Node* child){
+Node* interiorNode::addChild(Node* child){      //Returns a pointer to the child upon succession, returns NULL upon failure 
     if(find(this->children.begin(), this->children.end(), child) == this->children.end()){  //If the node is not in the children list
         this->children.push_back(child);    //Add the child
         this->children.sort(compareNodes);  //Sort the list
+        return child;
     }
+    return NULL;
 }
 
 /*---------------------------------------------------Root Node---------------------------------------------------------*/
@@ -106,11 +112,13 @@ list<Node*> rootNode::getChildren() const{
     return this->children;
 }
 
-void rootNode::addChild(Node* child){
+Node* rootNode::addChild(Node* child){      //Returns a pointer to the child upon succession, returns NULL upon failure
     if(find(this->children.begin(), this->children.end(), child) == this->children.end()){  //If the node is not in the children list
         this->children.push_back(child);    //Add the child
         this->children.sort(compareNodes);  //Sort the list
+        return child;
     }
+    return NULL;
 }
 
 Node* rootNode::removeChild(Node* child){
@@ -120,3 +128,5 @@ Node* rootNode::removeChild(Node* child){
     }
     return NULL;
 }
+
+/*--------------------------------------------------B+ Tree-----------------------------------------------------------*/
