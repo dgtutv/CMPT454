@@ -29,10 +29,27 @@ class leafNode : public Node {
 
         //Setters
         void addSibling(leafNode* sibling);
+        Node* changeParent(Node* newParent);        //Implement
 };
 
-class interiorNode : public Node {
+class interiorNode : public Node {      //Implement
+    private:
+        Node* parent;
+        list<interiorNode*> siblings;
+        list<Node*> children;
+    public:
+        //Constructor
+        interiorNode(int key, string value, Node* parent);
 
+        //Getters
+        Node* getParent() const;
+        list<interiorNode*> getSiblings() const;
+        list<Node*> getChildren() const;
+
+        //Setters
+        void addSibling(interiorNode* sibling);
+        void addChild(Node* child);
+        Node* changeParent(Node* newParent);
 };
 
 class rootNode : public Node {
