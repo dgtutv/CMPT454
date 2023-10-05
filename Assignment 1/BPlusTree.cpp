@@ -42,3 +42,21 @@ Node* leafNode::changeParent(Node* newParent){
 }
 
 /*-----------------------------------------------Interior Node---------------------------------------------------*/
+interiorNode::interiorNode(int key, string value, Node* parent) : Node(key, value), parent(parent){};       //Constructor
+
+list<interiorNode*> interiorNode::getSiblings() const{
+    return this->siblings;
+}
+
+void interiorNode::addSibling(interiorNode* sibling){
+    if(std::find(this->siblings.begin(), this->siblings.end(), sibling) == this->siblings.end()){   //Check if the node is already one of the siblings
+        this->siblings.push_back(sibling);  //If not, add it to the list
+        this->siblings.sort(compareNodes);  //Sort the list by node's keys
+    }
+}
+
+Node* interiorNode::changeParent(Node* newParent){
+    Node* oldParent = this->parent;
+    this->parent = newParent;
+    return oldParent;
+}
