@@ -56,6 +56,14 @@ list<interiorNode*> interiorNode::getSiblings() const{
     return this->siblings;
 }
 
+list<Node*> interiorNode::getChildren() const{
+    return this->children;
+}
+
+Node* interiorNode::getParent() const{
+    return this->parent;
+}
+
 void interiorNode::addSibling(interiorNode* sibling){
     if(find(this->siblings.begin(), this->siblings.end(), sibling) == this->siblings.end()){   //Check if the node is already one of the siblings
         this->siblings.push_back(sibling);  //If not, add it to the list
@@ -83,3 +91,6 @@ Node* interiorNode::removeChild(Node* child){
     }
     return NULL;
 }
+
+/*---------------------------------------------------Root Node---------------------------------------------------------*/
+rootNode::rootNode(int key, string value):Node(key, value){};       //Constructor
