@@ -73,8 +73,9 @@ class rootNode : public Node {      //Implement
 
 class BPlusTree {
     private:
-        list<leafNode> leafNodes;
-        list<interiorNode> interiorNodes;
-        rootNode root;
+        list<leafNode*> leafNodes;
+        list<interiorNode*> interiorNodes;
+        rootNode* root;
+        list<Node*> allNodes;       //Used for memory purposes
     public:
 };
