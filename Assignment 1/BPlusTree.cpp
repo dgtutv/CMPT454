@@ -76,3 +76,10 @@ Node* interiorNode::removeSibling(interiorNode* sibling){
     }
     return NULL;
 }
+Node* interiorNode::removeChild(Node* child){
+    if(find(this->children.begin(), this->children.end(), child) != this->children.end()){      //If the node is in the children list
+        this->children.remove(child);
+        return child;
+    }
+    return NULL;
+}
