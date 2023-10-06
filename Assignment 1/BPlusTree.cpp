@@ -66,16 +66,18 @@ Node* Node::removeChild(int value){
 /*--------------------------------------------------B+ Tree-----------------------------------------------------------*/
 BPlusTree::BPlusTree(int maxNumPointers):maxNumPointers(maxNumPointers){};      //Constructor
 
+//TODO: root can contain up to maxNumPointers, use a list in B+ tree
+
 bool BPlusTree::insert(int key, string value){
+    Node newNode(key, value, maxNumPointers);
+    allNodes.push_back(&newNode);
     if(root == NULL){     //If there is no root, make this the root
-        rootNode newNode(key, value);
+        newNode.isRoot = true;
+        newNode.isLeaf = true;
         root = &newNode;
-        allNodes.push_back(&newNode);
     }
     else if(root->getChildren().size() == 0){   //If the root has no children
-        //Make the root a child of itself
-        leafNode rootAsLeaf(root->getKey(), root->getValue(), root);
-        root->addChild((Node*)rootAsLeaf);
-        //Make the new node a child of the root
+        root->addChild(root);   //Make the root a child of itself
+        root->addChild(&newNode);    //Make the new node a child of the root
     }
 }
