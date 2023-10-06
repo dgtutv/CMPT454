@@ -24,11 +24,9 @@ class Node {
         bool isRoot;
 
         //Constructor
-        Node(int key, string value, int maxNumPointers);
+        Node(int maxNumPointers);
 
         //Getters
-        string getValue() const;
-        int getKey() const;
         list<Node*> getChildren() const;
         Node* getParent() const;
 
