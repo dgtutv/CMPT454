@@ -51,6 +51,18 @@ bool Node::addChild(Node* newChild){
     }
     return false;
 }
+
+Node* Node::removeChild(int value){
+    for(auto iterator = this->children.begin(); iterator != this->children.end(); ++iterator){
+        Node* currentChild = *iterator;
+        if(currentChild->getKey() == value){    //If the child is found
+            this->children.erase(iterator); //Remove the child
+            return currentChild;
+        }
+    }
+    //Otherwise, report failure
+    return NULL;
+}
 /*--------------------------------------------------B+ Tree-----------------------------------------------------------*/
 BPlusTree::BPlusTree(int maxNumPointers):maxNumPointers(maxNumPointers){};      //Constructor
 
