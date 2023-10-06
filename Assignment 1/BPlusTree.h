@@ -14,8 +14,7 @@ class Pair{
 
 class Node {
     private:
-        list<string> values;
-        list<int> keys;
+        list<Pair> pairs;
         Node* parent;
         list<Node*> children;
         int maxNumPointers;
