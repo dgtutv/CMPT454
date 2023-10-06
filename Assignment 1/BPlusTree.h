@@ -23,7 +23,7 @@ class leafNode{
         leafNode* rightSibling;
     public:
         //Constructor
-        leafNode(void* parent, leafNode* leftSibling, leafNode* rightSibling);
+        leafNode(void* parent);
 
         //Getter methods
         void* getParent() const;
