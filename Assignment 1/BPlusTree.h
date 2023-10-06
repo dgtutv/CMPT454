@@ -1,37 +1,35 @@
 #include <list>
 #include <string>
+#include <map>
 using namespace std;
 
-class Pair{
+class Node{
     private:
-        int key;
-        string value;
+        Node* parent;
+        bool isLeaf;
     public:
-        //Constructor
-        Pair(int key, string value);
+        map<int, string> keyValues;     //Here I use a map to store key/value pairs
+        list<Node*> children;       //Will be empty if the Node is a leafNode
+        Node(Node* parent, bool isLeaf);    //Constructor
 
-        //Getter methods
-        string getValue() const;
-        int getKey() const;
+        friend class BPlusTree;
 };
 
-class leafNode{
+class BPlusTree {
     private:
-        list<Pair> pairs;
-        void* parent;
-        leafNode* leftSibling;
-        leafNode* rightSibling;
+        Node* root;
+        list<Node*> allNodes;       //Used for memory purposes
+        int maxNumPointers;
     public:
         //Constructor
-        leafNode(void* parent);
+        BPlusTree(int maxNumPointers);  //Maximum number of entries is maxNumPointers-1
 
-        //Getter methods
-        void* getParent() const;
-        leafNode* getLeftSibling() const;
-        leafNode* getRightSibling() const;
+        //Setters     
+        bool insert(int key, string value);
+        bool remove(int key);
 
-        //Setter methods
-        void* changeParent(void* newParent);    //Returns a pointer to the old parent
-        leafNode* changeLeftSibling(leafNode* newLeftSibling);      //Returns a pointer to the old left sibling
-        leafNode* changeRightSibling(leafNode* newRightSibling);    //Returns a pointer to the old right sibling
+        //Getters
+        string find(int key);
+        void printKeys();
+        void printValues();
 };
