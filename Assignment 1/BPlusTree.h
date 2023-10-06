@@ -6,75 +6,31 @@ class Node {
     private:
         string value;
         int key;
+        Node* parent;
+        list<Node*> children;
     public:
+        bool isLeaf;
+        bool isInterior;
+        bool isRoot;
+
         //Constructor
         Node(int key, string value);
 
         //Getters
         string getValue() const;
         int getKey() const;
-};
-
-class leafNode : public Node {
-    private:
-        Node* parent;
-        list<leafNode*> siblings;
-    public:
-        //Constructor
-        leafNode(int key, string value, Node* parent);
-
-        //Getters
-        Node* getParent() const;
-        list<leafNode*> getSiblings() const;
-
-        //Setters
-        leafNode* addSibling(leafNode* sibling);
-        Node* changeParent(Node* newParent);        //Changes the parent of the node and returns the old parent
-        Node* removeSibling(leafNode* sibling);     //Removes a sibling of the node and returns a pointer to the sibling upon succession, returns NULL upon failure
-};
-
-class interiorNode : public Node {
-    private:
-        Node* parent;
-        list<interiorNode*> siblings;
-        list<Node*> children;
-    public:
-        //Constructor
-        interiorNode(int key, string value, Node* parent);
-
-        //Getters
-        Node* getParent() const;
-        list<interiorNode*> getSiblings() const;
         list<Node*> getChildren() const;
+        Node* getParent() const;
 
-        //Setters
-        interiorNode* addSibling(interiorNode* sibling);
-        Node* addChild(Node* child);
-        Node* changeParent(Node* newParent);        //Changes the parent of the node and returns the old parent
-        Node* removeSibling(interiorNode* sibling);     //Removes a sibling of the node and returns a pointer to the sibling upon succession, returns NULL upon failure
-        Node* removeChild(Node* child);     //Removes a child of the node and returns a pointer to the child upon succession, returns NULL upon failure
-};
-
-class rootNode : public Node {      
-    private:
-        list<Node*> children;
-    public:
-        //Constructor
-        rootNode(int key, string value);
-
-        //Getter
-        list<Node*> getChildren() const;
-
-        //Setter
-        Node* addChild(Node* child);
-        Node* removeChild(Node* child);     //Removes a child of the node and returns a pointer to the child upon succession, returns NULL upon failure 
+        //Setters, return true on success, false on failure
+        bool setParent(Node* newParent);
+        bool addChild(Node* newChild);
+        bool removeChild(int value);
 };
 
 class BPlusTree {
     private:
-        list<leafNode*> leafNodes;
-        list<interiorNode*> interiorNodes;
-        rootNode* root;
+        Node* root;
         list<Node*> allNodes;       //Used for memory purposes
         int maxNumPointers;
     public:
