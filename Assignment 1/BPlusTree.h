@@ -2,10 +2,20 @@
 #include <string>
 using namespace std;
 
+class Pair{
+    private:
+        int key;
+        string value;
+    public:
+        Pair(int key, string value);
+        string getValue() const;
+        int getKey() const;
+};
+
 class Node {
     private:
-        string value;
-        int key;
+        list<string> values;
+        list<int> keys;
         Node* parent;
         list<Node*> children;
         int maxNumPointers;
@@ -36,7 +46,7 @@ class BPlusTree {
         int maxNumPointers;
     public:
         //Constructor
-        BPlusTree(int maxNumPointers);
+        BPlusTree(int maxNumPointers);  //Maximum number of entries is maxNumPointers-1
 
         //Setters     
         bool insert(int key, string value);
