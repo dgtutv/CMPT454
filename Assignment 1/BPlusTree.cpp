@@ -6,6 +6,11 @@ bool compareNodes(const Node* a, const Node* b){     //This function is used to 
     return a->getValue() > b->getValue();
 }
 
+/*---------------------------------------------------Pair--------------------------------------------------------*/
+Pair::Pair(int key, string value): key(key), value(value){};
+int Pair::getKey() const {return this->key;}
+string Pair::getValue() const {return this->value;}
+
 /*---------------------------------------------------Node--------------------------------------------------------*/
 Node::Node(int key, string value, int maxNumPointers) : key(key), value(value), maxNumPointers(maxNumPointers){     //Constructor
     this->isLeaf = false;
