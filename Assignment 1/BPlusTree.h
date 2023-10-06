@@ -55,7 +55,7 @@ class interiorNode : public Node {
         Node* removeChild(Node* child);     //Removes a child of the node and returns a pointer to the child upon succession, returns NULL upon failure
 };
 
-class rootNode : public Node {      //Implement
+class rootNode : public Node {      
     private:
         list<Node*> children;
     public:
