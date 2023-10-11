@@ -62,6 +62,7 @@ bool BPlusTree::insert(int key, string value){
             }
         }
     }
+    //Make some sort of recursive function that can call on the root's children
     return false;
 }  
 
@@ -72,12 +73,16 @@ void BPlusTree::printKeys(){
         printNodeKey(*it);
     }
     cout<<endl;
+    cout<<endl;
 }
 
 void BPlusTree::printNodeKey(Node* node){
     cout<<"|";
     for(map<int, string>::iterator it = node->keyValues.begin(); it != node->keyValues.end(); it++){
-        cout<<it->first<<" ";
+        cout<<it->first;
+        if(it != prev(node->keyValues.end())){
+            cout<<" ";
+        }
     }
     cout<<"|";
 }
@@ -90,6 +95,9 @@ int main(int argc, char const *argv[]){
     tree->insert(11, "11");
     tree->printKeys();
     tree->insert(8, "8");
+    tree->printKeys();
+    tree->insert(64, "64");
+    tree->insert(5, "5");
     tree->printKeys();
 }
 
