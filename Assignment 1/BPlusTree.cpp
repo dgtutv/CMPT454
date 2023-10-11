@@ -49,6 +49,21 @@ void BPlusTree::insertInternal(Node* node, int key, string value){
             rightChild->keyValues.insert(pair<int, string>(key, value));
         }
     }
+    //If the node has children
+    else{
+        //Find which child to insert into
+        int counter=0;
+        for(map<int, string>::iterator it = node->keyValues.begin(); it  != node->keyValues.end(); it++){
+            if(key < it->first){
+                //Recursively call the child
+                return insertInternal(node->children[counter], key, value);
+            }
+            counter++;
+        }
+        //If there is no child which the key is less than its values
+            //If there is room in the node to insert the key, make a new poointer 
+        
+    }
 }
 
  map<int, string>::iterator BPlusTree::splitNode(Node* parent){
