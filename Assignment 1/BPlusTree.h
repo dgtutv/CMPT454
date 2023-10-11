@@ -7,13 +7,14 @@ class Node{
     private:
         Node* parent;
         bool isLeaf;
-        BPlusTree& tree;
+        BPlusTree* tree;
     public:
         map<int, string> keyValues;     //Here I use a map to store key/value pairs
         vector<Node*> children;       //Will be empty if the Node is a leafNode
-        Node(Node* parent, bool isLeaf, BPlusTree& tree);    //Constructor
+        Node(Node* parent, bool isLeaf, BPlusTree* tree);    //Constructor
         
         bool isOverflow() const;      //Checks if the Node is past full
+        friend class BPlusTree;
 };
 
 class BPlusTree {

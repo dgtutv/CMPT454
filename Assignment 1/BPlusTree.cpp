@@ -5,13 +5,17 @@
 using namespace std;
 
 /*------------------------------------------Node----------------------------------------*/
-Node::Node(Node* parent, bool isLeaf, BPlusTree& tree) : parent(parent), isLeaf(isLeaf), tree(tree){};
+Node::Node(Node* parent, bool isLeaf, BPlusTree* tree) : parent(parent), isLeaf(isLeaf), tree(tree){};
 
 bool Node::isOverflow() const{
-    return keyValues.size() > tree.getMaxNumPointers() -1;
+    return keyValues.size() > tree->getMaxNumPointers() -1;
 }
 /*----------------------------------------BPlusTree-------------------------------------*/
 BPlusTree::BPlusTree(int maxNumPointers) : maxNumPointers(maxNumPointers){};
+
+int BPlusTree::getMaxNumPointers(){
+    return maxNumPointers;
+}
 
 void BPlusTree::updateRoot(Node* newRoot){
     root = newRoot;
@@ -22,7 +26,7 @@ bool BPlusTree::insert(int key, string value){
     //TODO: check for duplicates first!!
 
     if(root == NULL){   //If the root does not exist, enter the value into it
-        root = new Node(NULL, true);
+        root = new Node(NULL, true, this);
         root->keyValues.insert(pair<int, string>(key, value));
     }
     else if(root->children.size() == 0){    //Check if the root has no children
@@ -46,8 +50,11 @@ void BPlusTree::insertInternal(Node* node, int key, string value){
         } 
         //Otherwise
         else{
-            //Split the leaf node
-            //Insert into one of the product nodes
+            //If possible, insert into parent and add a new pointer
+            if(node->parent->keyValues.size() < maxNumPointers-2){
+                node->parent->keyValues.insert(pair<int, string>(key, value));
+
+            }
         } 
     }
 
@@ -68,7 +75,7 @@ void BPlusTree::insertInternal(Node* node, int key, string value){
             //Otherwise, insert into the end pointer of the node
     }
 
-    //Split the node if necessary
+    //Split the node into two children if necessary
     if(node->isOverflow()){
         map<int, string>::iterator middlePair = splitNode(node);
         Node* leftChild = node->children[0];
@@ -84,7 +91,7 @@ void BPlusTree::insertInternal(Node* node, int key, string value){
 
         //Update the root if the node is the root
         if(node == root){
-            Node* newRoot = new Node(nullptr, false);
+            Node* newRoot = new Node(nullptr, false, this);
             newRoot->children.push_back(leftChild);
             newRoot->children.push_back(rightChild);
             newRoot->keyValues.insert(*middlePair);
@@ -95,8 +102,8 @@ void BPlusTree::insertInternal(Node* node, int key, string value){
 
  map<int, string>::iterator BPlusTree::splitNode(Node* parent){
     parent->isLeaf = false;
-    Node* leftChild = new Node(parent, true);
-    Node* rightChild = new Node(parent, true);
+    Node* leftChild = new Node(parent, true, this);
+    Node* rightChild = new Node(parent, true, this);
     parent->children.push_back(leftChild);
     parent->children.push_back(rightChild);
     map<int, string>::iterator middlePair;
