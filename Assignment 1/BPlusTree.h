@@ -37,4 +37,5 @@ class BPlusTree {
         void printNodeKey(Node* node);  //Prints the keys of the specified node
         map<int, string>::iterator splitNode(Node* parent);   //Adds two subchildren to the parent, splits the parents key/values among them
         void insertInternal(Node* node, int key, string value);     //Inserts a key/value pair into an internal node
+        void updateRoot(Node* newRoot);
 };

@@ -10,6 +10,10 @@ Node::Node(Node* parent, bool isLeaf) : parent(parent), isLeaf(isLeaf){};
 /*----------------------------------------BPlusTree-------------------------------------*/
 BPlusTree::BPlusTree(int maxNumPointers) : maxNumPointers(maxNumPointers){};
 
+void BPlusTree::updateRoot(Node* newRoot){
+    root = newRoot;
+}
+
 //Each interior/root node must contain floor(maxNumPointers/2) pointers. => floor(maxNumPointers-1/2) values
 bool BPlusTree::insert(int key, string value){
     //TODO: check for duplicates first!!
@@ -31,38 +35,56 @@ bool BPlusTree::insert(int key, string value){
 }  
 
 void BPlusTree::insertInternal(Node* node, int key, string value){
-    //If the node does have children
-    if(node->children.size() == 0){
-        //If the node is not full, insert into it
-        if(node->keyValues.size() < maxNumPointers-1){
+    //If the node is a leaf node
+    if(node->children.empty()){
+        //If there is room, insert into the leaf node
+        if(node->keyValues.size() < maxNumPointers - 1){
             node->keyValues.insert(pair<int, string>(key, value));
-        }
-
-        //If the node is full, split it, and then insert into one of the children
-        map<int, string>::iterator middlePair = splitNode(node);
-        Node* leftChild = node->children[0];
-        Node* rightChild = node->children[1];
-        if(key < middlePair->first){
-            leftChild->keyValues.insert(pair<int, string>(key, value));
-        }
+        } 
+        //Otherwise
         else{
-            rightChild->keyValues.insert(pair<int, string>(key, value));
-        }
+            //Split the leaf node
+            //Insert into one of the product nodes
+        } 
     }
-    //If the node has children
+    //If the node is internal
     else{
-        //Find which child to insert into
-        int counter=0;
-        for(map<int, string>::iterator it = node->keyValues.begin(); it  != node->keyValues.end(); it++){
+        int counter = 0;
+        for(map<int, string>::iterator it = node->keyValues.begin(); it != node->keyValues.end(); it++){
+            //If there is a child which the key is less than it's values
             if(key < it->first){
-                //Recursively call the child
-                return insertInternal(node->children[counter], key, value);
+                //Recursively call the function to insert the key/value
+                insertInternal(node->children[counter], key, value);
+                return;
             }
             counter++;
         }
         //If there is no child which the key is less than its values
-            //If there is room in the node to insert the key, make a new poointer 
         
+    }
+
+    //Split the node if necessary
+    if(node->isOverflow()){
+        map<int, string>::iterator middlePair = splitNode(node);
+        Node* leftChild = node->children[0];
+        Node* rightChild = node->children[1];
+
+        //Decide which child to insert into 
+        if(key < middlePair->first){
+            leftChild->keyValues.insert(pair<int, string>(key, value));
+        } 
+        else{
+            rightChild->keyValues.insert(pair<int, string>(key, value));
+        }
+
+        //Update the root if the node is the root
+        if(node == root){
+            Node* newRoot = new Node(nullptr, false);
+            newRoot->children.push_back(leftChild);
+            newRoot->children.push_back(rightChild);
+            newRoot->keyValues.insert(*middlePair);
+            updateRoot(newRoot);
+        }
     }
 }
 
