@@ -15,7 +15,7 @@ bool BPlusTree::insert(int key, string value){
         root = new Node(NULL, true);
         root->keyValues.insert(pair<int, string>(key, value));
     }
-    else if(root->children.size() == 0){    //Check if the root has children
+    else if(root->children.size() == 0){    //Check if the root has no children
         if(root->keyValues.size() < maxNumPointers-1){      //If the root is not full, insert into the root
             root->keyValues.insert(pair<int, string>(key, value));
         }
@@ -39,7 +39,7 @@ bool BPlusTree::insert(int key, string value){
                 }
                 counter++;
             }
-            
+
             //Remove all the key/values that are not the middle one
             for (map<int, string>::iterator it = root->keyValues.begin(); it != root->keyValues.end();) {
                 if(it != middlePair){
