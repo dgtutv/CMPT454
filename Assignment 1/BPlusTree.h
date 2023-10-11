@@ -34,5 +34,5 @@ class BPlusTree {
         void printValues();
 
         //Helpers
-        void printNode(Node* node);
+        void printNodeKey(Node* node);
 };

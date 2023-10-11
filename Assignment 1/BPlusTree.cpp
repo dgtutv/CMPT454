@@ -36,10 +36,10 @@ bool BPlusTree::insert(int key, string value){
                 if(counter < floor((maxNumPointers-1)/2)){
                     leftChild->keyValues[it->first] = it->second;
                 }
-                if(counter == floor((maxNumPointers-1)/2)){middlePair = it;}
                 else{
                     rightChild->keyValues[it->first] = it->second;
                 }
+                if(counter == floor((maxNumPointers-1)/2)){middlePair = it;}
                 counter++;
             }
 
@@ -62,19 +62,34 @@ bool BPlusTree::insert(int key, string value){
             }
         }
     }
+    return false;
 }  
 
 void BPlusTree::printKeys(){
-    printNode(root);
+    printNodeKey(root);
     cout<<endl;
     for(list<Node*>::iterator it = root->children.begin(); it != root->children.end(); it++){
-        printNode(*it);
+        printNodeKey(*it);
     }
     cout<<endl;
 }
 
-void BPlusTree::printNode(Node* node){
+void BPlusTree::printNodeKey(Node* node){
+    cout<<"|";
     for(map<int, string>::iterator it = node->keyValues.begin(); it != node->keyValues.end(); it++){
         cout<<it->first<<" ";
     }
+    cout<<"|";
 }
+
+//Tester code
+int main(int argc, char const *argv[]){
+    BPlusTree* tree = new BPlusTree(4);
+    tree->insert(21, "21");
+    tree->insert(2, "2");
+    tree->insert(11, "11");
+    tree->printKeys();
+    tree->insert(8, "8");
+    tree->printKeys();
+}
+
