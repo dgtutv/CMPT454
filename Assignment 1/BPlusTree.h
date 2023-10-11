@@ -32,4 +32,7 @@ class BPlusTree {
         string find(int key);
         void printKeys();
         void printValues();
+
+        //Helpers
+        void printNode(Node* node);
 };
