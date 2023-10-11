@@ -1,4 +1,4 @@
-#include <list>
+#include <vector>
 #include <string>
 #include <map>
 using namespace std;
@@ -9,7 +9,7 @@ class Node{
         bool isLeaf;
     public:
         map<int, string> keyValues;     //Here I use a map to store key/value pairs
-        list<Node*> children;       //Will be empty if the Node is a leafNode
+        vector<Node*> children;       //Will be empty if the Node is a leafNode
         Node(Node* parent, bool isLeaf);    //Constructor
 
         friend class BPlusTree;
@@ -18,7 +18,7 @@ class Node{
 class BPlusTree {
     private:
         Node* root;
-        list<Node*> allNodes;       //Used for memory purposes
+        vector<Node*> allNodes;       //Used for memory purposes
         int maxNumPointers;
     public:
         //Constructor
@@ -35,6 +35,6 @@ class BPlusTree {
 
         //Helpers
         void printNodeKey(Node* node);  //Prints the keys of the specified node
-        void splitNode(Node* parent);   //Adds two subchildren to the parent, splits the parents key/values among them
+        map<int, string>::iterator splitNode(Node* parent);   //Adds two subchildren to the parent, splits the parents key/values among them
         void insertInternal(Node* node, int key, string value);     //Inserts a key/value pair into an internal node
 };
