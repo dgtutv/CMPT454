@@ -7,12 +7,13 @@ class Node{
     private:
         Node* parent;
         bool isLeaf;
+        BPlusTree& tree;
     public:
         map<int, string> keyValues;     //Here I use a map to store key/value pairs
         vector<Node*> children;       //Will be empty if the Node is a leafNode
-        Node(Node* parent, bool isLeaf);    //Constructor
-
-        friend class BPlusTree;
+        Node(Node* parent, bool isLeaf, BPlusTree& tree);    //Constructor
+        
+        bool isOverflow() const;      //Checks if the Node is past full
 };
 
 class BPlusTree {
@@ -32,6 +33,7 @@ class BPlusTree {
         string find(int key);
         void printKeys();
         void printValues();
+        int getMaxNumPointers();
 
         //Helpers
         void printNodeKey(Node* node);  //Prints the keys of the specified node

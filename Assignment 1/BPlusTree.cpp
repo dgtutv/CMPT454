@@ -5,8 +5,11 @@
 using namespace std;
 
 /*------------------------------------------Node----------------------------------------*/
-Node::Node(Node* parent, bool isLeaf) : parent(parent), isLeaf(isLeaf){};
+Node::Node(Node* parent, bool isLeaf, BPlusTree& tree) : parent(parent), isLeaf(isLeaf), tree(tree){};
 
+bool Node::isOverflow() const{
+    return keyValues.size() > tree.getMaxNumPointers() -1;
+}
 /*----------------------------------------BPlusTree-------------------------------------*/
 BPlusTree::BPlusTree(int maxNumPointers) : maxNumPointers(maxNumPointers){};
 
