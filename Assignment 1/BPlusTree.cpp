@@ -24,6 +24,7 @@ void BPlusTree::updateRoot(Node* newRoot){
 //Each interior/root node must contain floor(maxNumPointers/2) pointers. => floor(maxNumPointers-1/2) values
 bool BPlusTree::insert(int key, string value){
     //TODO: check for duplicates first!!
+    //TODO: make sure leaf nodes point to each other!
 
     if(root == NULL){   //If the root does not exist, enter the value into it
         root = new Node(NULL, true, this);
@@ -53,7 +54,55 @@ void BPlusTree::insertInternal(Node* node, int key, string value){
             //If possible, insert into parent and add a new pointer
             if(node->parent->keyValues.size() < maxNumPointers-2){
                 node->parent->keyValues.insert(pair<int, string>(key, value));
+                Node* newSibling = new Node(node->parent, true, this);
 
+                //Find the corresponding pointer location
+                int counter = 1;    //We want to insert to the right of the corresponding location
+                for(map<int, string>::iterator it = node->parent->keyValues.begin(); it != node->parent->keyValues.end(); it++){
+                    if(it->first == key){
+                        node->parent->children[counter] = newSibling;
+                        break;
+                    }
+                    counter++;
+                }
+                
+                //Balance the node with it's newSibling 
+                vector<int> keysToRemove;
+                for(map<int, string>::iterator it = node->keyValues.begin(); it != node->keyValues.end(); it++){
+                    if(it->first >= key){
+                        newSibling->keyValues.insert(pair<int, string>(it->first, it->second));
+                        keysToRemove.push_back(it->first);
+                    }
+                }
+
+                //Remove keys that were inserted into the new sibling
+                for(int i=0; i<keysToRemove.size(); i++){
+                    node->keyValues.erase(keysToRemove[i]);
+                }
+
+                //Finally, add the key/value pair to the new sibling
+                newSibling->keyValues.insert(pair<int, string>(key, value));
+            }
+
+            //If the parent is full,
+            else{
+                //If the parent is the root
+                    //Create a new root with the middle child 
+                    //Split the parent into two parent siblings (maybe uncles?)
+                    //Distribute the new root's pointers
+                    //Create a new sibling to our node
+                    //Find the corresponding pointer location in the parent for our newSibling
+                    //Balance the node with it's new sibling 
+                    //Remove keys that were inserted into the new sibling
+                    //Add the key/value pair to the new sibling 
+                //Otherwise (if the parent is not the root),
+                    //Update the parent pointer
+                    //Split the parent into two siblings
+                    //Create a new sibling to the original node
+                    //Find the corresponding pointer location in the parent for our newSibling
+                    //Balance the original node with it's new sibling 
+                    //Remove keys that were inserted into the new sibling
+                    //Add the key/value pair to the new sibling 
             }
         } 
     }
