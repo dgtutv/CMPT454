@@ -47,6 +47,7 @@ void BPlusTree::insertInternal(Node* node, int key, string value){
             //Insert into one of the product nodes
         } 
     }
+
     //If the node is internal
     else{
         int counter = 0;
@@ -60,7 +61,8 @@ void BPlusTree::insertInternal(Node* node, int key, string value){
             counter++;
         }
         //If there is no child which the key is less than its values
-        
+            //If there is room in the node, add a new child, and its value
+            //Otherwise, insert into the end pointer of the node
     }
 
     //Split the node if necessary
