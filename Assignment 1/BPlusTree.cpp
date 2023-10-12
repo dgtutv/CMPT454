@@ -78,13 +78,14 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
     }
 
     //If there is a parent, but it is full, recursively call splitNode on the parent
-    else if(leftNode->parent->isFull()){
-        splitNode(leftNode->parent);
+    if(leftNode->parent->isFull()){
+        splitNode(leftNode->parent, rightNode->keyValues.begin()->first, rightNode->keyValues.begin()->second);
     }
 
     //Insert rightNode's first key into the parent
-    leftNode->parent->keyValues.insert(pair<int, string>(rightNode->keyValues.begin()->first, rightNode->keyValues.begin()->second));
-
+    else{
+        leftNode->parent->keyValues.insert(pair<int, string>(rightNode->keyValues.begin()->first, rightNode->keyValues.begin()->second));
+    }
     //Override pointers adjacent to the newly inserted key to point at the leftNode and the rightNode
     leftNode->parent->children.push_back(rightNode);
     sort(leftNode->parent->children.begin(), leftNode->parent->children.end(), compareNodes);
