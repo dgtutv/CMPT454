@@ -34,6 +34,7 @@ void BPlusTree::updateRoot(Node* newRoot){
 void BPlusTree::splitNode(Node* leftNode, int key, string value){
     //Create a sibling node
     Node* rightNode = new Node(leftNode->parent, leftNode->isLeaf, this);
+    allNodes.push_back(rightNode);
     int counter = 0;
     vector<int> keysToRemove;
     vector<Node*> pointersToRemove;
@@ -66,6 +67,7 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
     //If a parent does not exist, make an empty one
     if(leftNode == root){
         Node* newParent = new Node(nullptr, false, this);
+        allNodes.push_back(newParent);
         leftNode->parent = newParent;
         rightNode->parent = newParent;
         newParent->children.push_back(leftNode);
