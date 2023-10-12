@@ -80,7 +80,7 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
         }
 
         //Otherwise, if the leaf should be split among children
-        else if(node->isLeaf && (node->parent == nullptr || node->parent->isFull())){
+        else if(node->isLeaf && node->parent == nullptr){
             //Split the node
             map<int, string>::iterator middlePair = splitNode(node);
             Node* leftChild = node->children[0];
@@ -100,8 +100,8 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
                 return handleNodeOverflow(node->parent, middlePair->first, middlePair->second);
             }   
         }
-        //Otherwise,
-        else{
+        //Otherwise, if the parent is not full
+        else if(!node->parent->isFull()){
             //Insert the value into the parent
             handleNodeOverflow(node->parent, key, value);
 
@@ -132,6 +132,22 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
             sort(node->parent->children.begin(), node->parent->children.end(), compareNodes);
 
             return true;
+        }
+        //If the parent is full and the node is full
+        else{
+            //Split the node
+            
+            //Balance the node
+            //Split the parent
+            //Point the split parents to the nodes
+            //If there is no grandfather
+                //Make a grandfather
+                //Point the grandfather to the split parents
+            //If there is, and it's got room
+                //Add the new parent to the granfather
+                //Sort the grandfather's children
+            //If there is, and it has no room
+                //Propogate the overflow up the tree
         }
     }
     return false;       //If the ndoes does not exist, it cannot be inserted into
