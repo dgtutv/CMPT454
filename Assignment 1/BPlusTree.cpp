@@ -69,6 +69,7 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
         leftNode->parent = newParent;
         rightNode->parent = newParent;
         newParent->children.push_back(leftNode);
+        root = newParent;
     }
 
     //Update leftNode and rightNode's isLeaf booleans
