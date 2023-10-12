@@ -63,7 +63,7 @@ void BPlusTree::updateRoot(Node* newRoot){
 }
 
 bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
-    if(node != NULL){
+    if(node != nullptr){
         //If there is room in the node, insert the key/value pair 
         if(!node->isFull()){
             node->keyValues.insert(pair<int, string>(key, value));
@@ -113,7 +113,7 @@ bool BPlusTree::insertInternal(Node* node, int key, string value){
         }
 
         //If not, check if there is room in the node
-        if(!node->isOverflow()){
+        if(node->isFull()){
             return handleNodeOverflow(node, key, value);       //If there is no room in the node, handle the overflow
         }
         else{
@@ -128,8 +128,8 @@ bool BPlusTree::insert(int key, string value){
     //TODO: check for duplicates first!!
     //TODO: make sure leaf nodes point to each other!
 
-    if(root == NULL){   //If the root does not exist, enter the value into it
-        root = new Node(NULL, true, this);
+    if(root == nullptr){   //If the root does not exist, enter the value into it
+        root = new Node(nullptr, true, this);
         allNodes.push_back(root);
     }
 
@@ -166,7 +166,7 @@ int main(int argc, char const *argv[]){
     tree->printKeys();
     tree->insert(8, "8");
     tree->printKeys();
-    tree->insert(64, "64");
+    tree->insert(64, "64"); //Only gets inserted into the root, should only be in the child
     tree->insert(5, "5");
     tree->printKeys();
 }
