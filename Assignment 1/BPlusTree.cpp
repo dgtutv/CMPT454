@@ -102,9 +102,6 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
         }
         //Otherwise, if the parent is not full
         else if(!node->parent->isFull()){
-            //Insert the value into the parent
-            handleNodeOverflow(node->parent, key, value);
-
             //Split the child
             Node* newSibling = new Node(node->parent, true, this);
             allNodes.push_back(newSibling);
@@ -126,7 +123,10 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
             }
 
             //Blindly add the new sibling to the parent's children
-            node->parent->children.push_back(newSibling);       
+            node->parent->children.push_back(newSibling);     
+
+            //Insert the first value of the new child into the parent
+            handleNodeOverflow(node->parent, newSibling->keyValues.begin()->first, newSibling->keyValues.begin()->second);  
 
             //Sort the parent's children based on the first key in each child
             sort(node->parent->children.begin(), node->parent->children.end(), compareNodes);
@@ -136,7 +136,7 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
         //If the parent is full and the node is full
         else{
             //Split the node
-            
+            //TODO: The value that goes into the parent should be the first value of the new node
             //Balance the node
             //Split the parent
             //Point the split parents to the nodes
