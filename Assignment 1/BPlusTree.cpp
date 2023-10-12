@@ -202,6 +202,7 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
             if(node->parent == root){
                 //Make a grandfather
                 Node* newGrandfather = new Node(nullptr, false, this);
+                root = newGrandfather;
                 allNodes.push_back(newGrandfather);
 
                 //Point the grandfather to the split parents
