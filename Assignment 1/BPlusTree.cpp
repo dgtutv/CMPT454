@@ -31,7 +31,7 @@ void BPlusTree::updateRoot(Node* newRoot){
     root = newRoot;
 }
 
-void BPlusTree::splitNode(Node* leftNode){
+void BPlusTree::splitNode(Node* leftNode, int key, string value){
     //Create a sibling node
     Node* rightNode = new Node(leftNode->parent, leftNode->isLeaf, this);
     int counter = 0;
@@ -58,6 +58,14 @@ void BPlusTree::splitNode(Node* leftNode){
             vector<Node*>::iterator it = std::find(leftNode->children.begin(), leftNode->children.end(), pointersToRemove[i]);
             leftNode->children.erase(it);
         }
+    }
+
+    //Insert the new key/value to the corresponding node
+    if(leftNode->keyValues.size() < rightNode->keyValues.size()){
+        leftNode->keyValues.insert(pair<int, string>(key, value));
+    }
+    else{
+        rightNode->keyValues.insert(pair<int, string>(key, value));
     }
 
     //If a parent does not exist, make an empty one
