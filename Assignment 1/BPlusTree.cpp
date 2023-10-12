@@ -134,7 +134,7 @@ bool BPlusTree::insert(int key, string value){
     //Otherwise, find where to insert our pair
     else{
         Node* insertionNode = findNode(key);
-        if(insertionNode->isFull()){
+        if(insertionNode->isFull() || insertionNode->isOverflow()){
             splitNode(insertionNode, key, value);
         }
         else{
