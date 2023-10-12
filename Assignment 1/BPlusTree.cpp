@@ -123,9 +123,11 @@ BPlusTree::Node* BPlusTree::findNode(int key){
         for(int i=1; i<currentNode->keyValues.size(); i++){
             currKey = (it++)->first;
             //If we find our key between two values in the map, go to the corresponding child
-            if(prevKey <= key < currKey){
+            if(prevKey <= key && key < currKey){
                 currentNode = currentNode->children[i];
+                break;
             }
+            prevKey = currKey;
         }
     }
 }
