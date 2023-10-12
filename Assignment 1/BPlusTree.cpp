@@ -74,6 +74,7 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
     if(leftNode->children.size() == 0){
         leftNode->isLeaf = true;
         rightNode->isLeaf = true;
+        leftNode->nextLeaf = rightNode;
     }
 
     //If there is a parent, but it is full, recursively call splitNode on the parent
@@ -141,8 +142,6 @@ BPlusTree::Node* BPlusTree::findNode(int key){
 //Each interior/root node must contain floor(maxNumPointers/2) pointers. => floor(maxNumPointers-1/2) values
 bool BPlusTree::insert(int key, string value){
     //TODO: check for duplicates first!!
-    //TODO: make sure leaf nodes point to each other!
-
 
     //If the root does not exist, enter the value into it
     if(root == nullptr){   
@@ -163,6 +162,33 @@ bool BPlusTree::insert(int key, string value){
     }
     return true;
 }  
+
+void BPlusTree::printLeaves(){
+    Node* currNode = root;
+    while(!currNode->isLeaf){
+        currNode = *currNode->children.begin();
+    }
+    while(true){
+        cout<<"{";
+        int counter = 0;
+        for(auto it=currNode->keyValues.begin(); it != currNode->keyValues.end(); it++){
+            cout<<"("<<it->first<<", "<<it->second<<")";
+            if(counter != currNode->keyValues.size()-1){
+                cout<<", ";
+            }
+            counter++;
+        }
+        cout<<"}";
+        currNode = currNode->nextLeaf;
+        if(currNode == nullptr){
+            cout<<endl;
+            return;
+        }
+        else{
+            cout<<" -> ";
+        }
+    }
+}
 
 void BPlusTree::printKeys(){
     queue<Node*> nodesToPrint;
@@ -207,31 +233,40 @@ int main(int argc, char const *argv[]){
     tree->insert(21, "21");
     tree->insert(2, "2");
     tree->insert(11, "11");
-    cout<<"Insert 21, 2, 11\n";
+    cout<<"\nInsert 21, 2, 11\n";
     tree->printKeys();
+    tree->printLeaves();
     tree->insert(8, "8");
-    cout<<"Insert 8\n";
+    cout<<"\nInsert 8\n";
     tree->printKeys();
+    tree->printLeaves();
     tree->insert(64, "64");
-    cout<<"Insert 64\n"; 
+    cout<<"\nInsert 64\n"; 
     tree->printKeys();
+    tree->printLeaves();
     tree->insert(5, "5");
-    cout<<"Insert 5\n";   
+    cout<<"\nInsert 5\n";   
     tree->printKeys();
+    tree->printLeaves();
     tree->insert(23, "23");
-    cout<<"Insert 23\n";
+    cout<<"\nInsert 23\n";
     tree->printKeys();
+    tree->printLeaves();
     tree->insert(6, "6");
-    cout<<"Insert 6\n";
+    cout<<"\nInsert 6\n";
     tree->printKeys();
-    tree->insert(19, "19");     //Breaks here
-    cout<<"Insert 19\n";
+    tree->printLeaves();    //TODO: breaks here
+    tree->insert(19, "19");
+    cout<<"\nInsert 19\n";
     tree->printKeys();
+    tree->printLeaves();
     tree->insert(9, "9");
-    cout<<"Insert 9\n";
+    cout<<"\nInsert 9\n";
     tree->printKeys();
+    tree->printLeaves();
     tree->insert(7, "7");
-    cout<<"Insert 7\n";
+    cout<<"\nInsert 7\n";
     tree->printKeys();
+    tree->printLeaves();
 }
 

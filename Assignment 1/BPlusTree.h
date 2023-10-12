@@ -10,6 +10,7 @@ class BPlusTree {
                 Node* parent;
                 bool isLeaf;
                 BPlusTree* tree;
+                Node* nextLeaf;     //Is null if the node is not a leaf itself
             public:
                 //Public data
                 map<int, string> keyValues;     //Here I use a map to store key/value pairs
@@ -39,6 +40,7 @@ class BPlusTree {
         string find(int key);
         void printKeys();
         void printValues();
+        void printLeaves();     //Goes to the first leaf, then uses leaf pointers to get the rest
 
         //Helpers
         void printNodeKey(Node* node);  //Prints the keys of the specified node
