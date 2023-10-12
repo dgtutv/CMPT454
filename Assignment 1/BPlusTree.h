@@ -46,5 +46,5 @@ class BPlusTree {
         map<int, string>::iterator splitNode(Node* parent);   //Adds two subchildren to the parent, splits the parents key/values among them
         void insertInternal(Node* node, int key, string value);     //Inserts a key/value pair into an internal node
         void updateRoot(Node* newRoot);
-        void recursiveInsertion(Node* node, int key, string value);      //Recursively propogates a key up through full parents if needed
+        void handleNodeOverflow(Node* node, int key, string value);      //Recursively propogates a key up through full parents if needed
 };
