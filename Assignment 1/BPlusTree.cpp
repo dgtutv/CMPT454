@@ -118,18 +118,20 @@ BPlusTree::Node* BPlusTree::findNode(int key){
         if(currentNode->keyValues.size()<2){
             return nullptr;
         }
-        //Iterate over our keyValues map    //TODO: BROKEN
-        int prevKey = currentNode->keyValues.begin()->first;
+        //Iterate over our keyValues map 
         int currKey;
-        int i=1;
-        for(map<int, string>::iterator it=currentNode->keyValues.begin(); it != currentNode->keyValues.end()--; ++it){
-            currKey = (++it)->first;
-            //If we find our key between two values in the map, go to the corresponding child
-            if(prevKey <= key && key < currKey){
+        int i=0;
+        for(map<int, string>::iterator it=currentNode->keyValues.begin()++; it != currentNode->keyValues.end(); ++it){
+            currKey = it->first;
+            //If we find our key to be less than the current key, go to the ith child
+            if(key<currKey){
                 currentNode = currentNode->children[i];
                 break;
             }
-            prevKey = currKey;
+            //If we find our key to be the same as the current key, go to the i+1th child
+            else if(key==currKey){
+                currentNode = currentNode->children[i+1];
+            }
             ++i;
         }
     }
