@@ -26,80 +26,6 @@ void BPlusTree::updateRoot(Node* newRoot){
     root = newRoot;
 }
 
-void BPlusTree::handleNodeOverflow(Node* node, int key, string value){
-    if(node != NULL){
-        //If there is room in the node, insert the key/value pair 
-        if(!node->isFull()){
-            node->keyValues.insert(pair<int, string>(key, value));
-        }
-
-        //Otherwise,
-        else{
-            //Split the node
-            map<int, string>::iterator middlePair = splitNode(node);
-            Node* leftChild = node->children[0];
-            Node* rightChild = node->children[1];
-
-            //Recursively inserts the key into the children
-            if(key < middlePair->first){
-                handleNodeOverflow(leftChild, key, value);
-            }
-            else{
-                handleNodeOverflow(rightChild, key, value);
-            }
-
-            //Once split, check if the parent is also full
-            if(node->parent->isFull()){
-                //If so, recursively propogate the middle pair to the parent
-                handleNodeOverflow(node->parent, middlePair->first, middlePair->second);
-            }   
-        }
-    }
-}
-
-//Each interior/root node must contain floor(maxNumPointers/2) pointers. => floor(maxNumPointers-1/2) values
-bool BPlusTree::insert(int key, string value){
-    //TODO: check for duplicates first!!
-    //TODO: make sure leaf nodes point to each other!
-
-    if(root == NULL){   //If the root does not exist, enter the value into it
-        root = new Node(NULL, true, this);
-        allNodes.push_back(root);
-    }
-    
-    return insertInternal(root, key, value);;
-}  
-
-bool BPlusTree::insertInternal(Node* node, int key, string value){
-    //If the node is a leaf, simply call our recursiveInsertion method
-    if(node->children.empty()){
-        handleNodeOverflow(node, key, value);
-    }
-    //Otherwise,
-    else{
-        //Check if there is a child which the key should go in
-        int counter =  0;
-        for(map<int, string>::iterator it = node->keyValues.begin(); it != node->keyValues.end(); it++){
-            //If so, recursively call insertInteral to insert the value into the child
-            if(key < it->first){
-                insertInternal(node->children[counter], key, value);
-                return;
-            }
-            counter++;
-        }
-
-        //If not, check if there is room in the node
-        if(!node->isOverflow()){
-            handleNodeOverflow(node, key, value);       //If there is no room in the node, handle the overflow
-            return;
-        }
-        else{
-            insertInternal(node->children.back(), key, value);      //If there is room, insert into the end pointer of the node
-            return;
-        }
-    }
-}
-
  map<int, string>::iterator BPlusTree::splitNode(Node* parent){     //Splits a parent node into two children and distributes the values, do not use for leaves
     parent->isLeaf = false;
     Node* leftChild = new Node(parent, true, this);
@@ -135,6 +61,80 @@ bool BPlusTree::insertInternal(Node* node, int key, string value){
 
     return middlePair;
 }
+
+bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
+    if(node != NULL){
+        //If there is room in the node, insert the key/value pair 
+        if(!node->isFull()){
+            node->keyValues.insert(pair<int, string>(key, value));
+            return true;
+        }
+
+        //Otherwise,
+        else{
+            //Split the node
+            map<int, string>::iterator middlePair = splitNode(node);
+            Node* leftChild = node->children[0];
+            Node* rightChild = node->children[1];
+
+            //Recursively inserts the key into the children
+            if(key < middlePair->first){
+                return handleNodeOverflow(leftChild, key, value);
+            }
+            else{
+                return handleNodeOverflow(rightChild, key, value);
+            }
+
+            //Once split, check if the parent is also full
+            if(node->parent->isFull()){
+                //If so, recursively propogate the middle pair to the parent
+                return handleNodeOverflow(node->parent, middlePair->first, middlePair->second);
+            }   
+        }
+    }
+    return false;       //If the ndoes does not exist, it cannot be inserted into
+}
+
+bool BPlusTree::insertInternal(Node* node, int key, string value){
+    //If the node is a leaf, simply call our recursiveInsertion method
+    if(node->children.empty()){
+        return handleNodeOverflow(node, key, value);
+    }
+    //Otherwise,
+    else{
+        //Check if there is a child which the key should go in
+        int counter =  0;
+        for(map<int, string>::iterator it = node->keyValues.begin(); it != node->keyValues.end(); it++){
+            //If so, recursively call insertInteral to insert the value into the child
+            if(key < it->first){
+                return insertInternal(node->children[counter], key, value);
+            }
+            counter++;
+        }
+
+        //If not, check if there is room in the node
+        if(!node->isOverflow()){
+            return handleNodeOverflow(node, key, value);       //If there is no room in the node, handle the overflow
+        }
+        else{
+            return insertInternal(node->children.back(), key, value);      //If there is room, insert into the end pointer of the node
+        }
+    }
+    return false;
+}
+
+//Each interior/root node must contain floor(maxNumPointers/2) pointers. => floor(maxNumPointers-1/2) values
+bool BPlusTree::insert(int key, string value){
+    //TODO: check for duplicates first!!
+    //TODO: make sure leaf nodes point to each other!
+
+    if(root == NULL){   //If the root does not exist, enter the value into it
+        root = new Node(NULL, true, this);
+        allNodes.push_back(root);
+    }
+
+    return insertInternal(root, key, value);;
+}  
 
 void BPlusTree::printKeys(){
     printNodeKey(root);
