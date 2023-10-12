@@ -103,22 +103,20 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
             node->keyValues.insert(pair<int, string>(key, value));
 
             //Point the parent to new sibling 
-            int counter=0;
             for(map<int, string>::iterator it=node->parent->keyValues.begin(); it!= node->parent->keyValues.end(); it++){
                 if(key == it->first){
-                    node->parent->children[counter] = newSibling;
+                    node->parent->children.push_back(newSibling);
                     break;
                 }
-                counter++;
             }
 
             //Balance values with the new sibling
             vector<int> keysToRemove;
-            counter=0;
+            int counter = 0;
             for(map<int, string>::iterator it=node->keyValues.begin(); it!=node->keyValues.end(); it++){
-                if(counter >= floor((maxNumPointers-1)/2)){
+                if(counter > floor((maxNumPointers-1)/2)){
                     keysToRemove.push_back(it->first);
-                    newSibling->keyValues.insert(*it);
+                    newSibling->keyValues.insert(pair<int, string>(it->first, it->second));
                 }
                 counter++;
             }
@@ -223,6 +221,8 @@ int main(int argc, char const *argv[]){
     tree->insert(5, "5");
     tree->printKeys();
     tree->insert(23, "23");
+    tree->printKeys();
+    tree->insert(6, "6");
     tree->printKeys();
 }
 
