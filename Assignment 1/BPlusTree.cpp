@@ -212,6 +212,9 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
 
                 //Insert the first value of the new parent into the grandfather
                 newGrandfather->keyValues.insert(pair<int, string>(newParent->keyValues.begin()->first, newParent->keyValues.begin()->second));
+
+                //Remove the value that was put into the grandfather from the original parent
+                newParent->keyValues.erase(newParent->keyValues.begin()->first);
             }
                 
             //If there is, and it's got room
