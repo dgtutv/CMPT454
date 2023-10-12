@@ -5,6 +5,12 @@
 #include <queue>
 using namespace std;
 
+/*------------------------------Compare function for nodes-------------------------------*/
+bool compareNodes(const BPlusTree::Node* a, const BPlusTree::Node* b){
+    //Compare nodes based on the first value in their keyValues map
+    return a->keyValues.begin()->first < b->keyValues.begin()->first;
+}
+
 /*------------------------------------------Node----------------------------------------*/
 BPlusTree::Node::Node(Node* parent, bool isLeaf, BPlusTree* tree) : parent(parent), isLeaf(isLeaf), tree(tree){};
 
@@ -102,13 +108,11 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
             allNodes.push_back(newSibling);
             node->keyValues.insert(pair<int, string>(key, value));
 
-            //Point the parent to new sibling 
-            for(map<int, string>::iterator it=node->parent->keyValues.begin(); it!= node->parent->keyValues.end(); it++){
-                if(key == it->first){
-                    node->parent->children.push_back(newSibling);
-                    break;
-                }
-            }
+            //Blindly add the new sibling to the parent's children
+            node->parent->children.push_back(newSibling);       
+
+            //Sort the parent's children based on the first key in each child
+            sort(node->parent->children.begin(), node->parent->children.end(), compareNodes);
 
             //Balance values with the new sibling
             vector<int> keysToRemove;
