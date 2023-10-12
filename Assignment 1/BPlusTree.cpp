@@ -26,7 +26,7 @@ void BPlusTree::updateRoot(Node* newRoot){
     root = newRoot;
 }
 
-void BPlusTree::handleNodeOverflow(Node* node, int key, string value){
+void BPlusTree::recursiveInsertion(Node* node, int key, string value){
     if(node != NULL){
         //If there is room in the node, insert the key/value pair 
         if(!node->isFull()){
@@ -42,16 +42,16 @@ void BPlusTree::handleNodeOverflow(Node* node, int key, string value){
 
             //Recursively inserts the key into the children
             if(key < middlePair->first){
-                handleNodeOverflow(leftChild, key, value);
+                recursiveInsertion(leftChild, key, value);
             }
             else{
-                handleNodeOverflow(rightChild, key, value);
+                recursiveInsertion(rightChild, key, value);
             }
 
             //Once split, check if the parent is also full
             if(node->parent->isFull()){
                 //If so, recursively propogate the middle pair to the parent
-                handleNodeOverflow(node->parent, middlePair->first, middlePair->second);
+                recursiveInsertion(node->parent, middlePair->first, middlePair->second);
             }   
         }
     }
