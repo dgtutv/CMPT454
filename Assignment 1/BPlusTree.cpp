@@ -35,7 +35,7 @@ void BPlusTree::updateRoot(Node* newRoot){
     root = newRoot;
 }
 
- map<int, string>::iterator BPlusTree::splitNode(Node* parent){     //Splits a parent node into two children and distributes the values, do not use for leaves
+ map<int, string>::iterator BPlusTree::splitNodeSingleLevel(Node* parent){     //Splits a parent node into two children and distributes the values, only use for single level tree case
     parent->isLeaf = false;
     Node* leftChild = new Node(parent, true, this);
     allNodes.push_back(leftChild);
@@ -82,7 +82,7 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
         //Otherwise, if a leaf and the root, should be split among children
         else if(node->isLeaf && node->parent == nullptr){
             //Split the node
-            map<int, string>::iterator middlePair = splitNode(node);
+            map<int, string>::iterator middlePair = splitNodeSingleLevel(node);
             Node* leftChild = node->children[0];
             Node* rightChild = node->children[1];
 
