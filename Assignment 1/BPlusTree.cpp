@@ -198,28 +198,28 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
                 sort(newParent->children.begin(), newParent->children.end(), compareNodes);
             }
 
-            //If there is no grandfather
+            //If there is no grandparent
             if(node->parent == root){
-                //Make a grandfather
-                Node* newGrandfather = new Node(nullptr, false, this);
-                root = newGrandfather;
-                allNodes.push_back(newGrandfather);
+                //Make a grandparent
+                Node* newgrandparent = new Node(nullptr, false, this);
+                root = newgrandparent;
+                allNodes.push_back(newgrandparent);
 
-                //Point the grandfather to the split parents
-                newGrandfather->children.push_back(node->parent);
-                newGrandfather->children.push_back(newParent);
-                sort(newGrandfather->children.begin(), newGrandfather->children.end(), compareNodes);
+                //Point the grandparent to the split parents
+                newgrandparent->children.push_back(node->parent);
+                newgrandparent->children.push_back(newParent);
+                sort(newgrandparent->children.begin(), newgrandparent->children.end(), compareNodes);
 
-                //Insert the first value of the new parent into the grandfather
-                newGrandfather->keyValues.insert(pair<int, string>(newParent->keyValues.begin()->first, newParent->keyValues.begin()->second));
+                //Insert the first value of the new parent into the grandparent
+                newgrandparent->keyValues.insert(pair<int, string>(newParent->keyValues.begin()->first, newParent->keyValues.begin()->second));
 
-                //Remove the value that was put into the grandfather from the original parent
+                //Remove the value that was put into the grandparent from the original parent
                 newParent->keyValues.erase(newParent->keyValues.begin()->first);
             }
                 
-            //If there is, and it's got room
-                //Add the new parent to the granfather
-                //Sort the grandfather's children
+            //If there is a grandparent, and it's got room
+                //Add the new parent to the grandparent
+                //Sort the grandparent's children
             //If there is, and it has no room
                 //Propogate the overflow up the tree
         }
