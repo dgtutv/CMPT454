@@ -43,5 +43,4 @@ class BPlusTree {
         //Helpers
         void printNodeKey(Node* node);  //Prints the keys of the specified node
         void splitNode(Node* leftNode, int key, string value);   //Splits a node to right and left nodes, and inserts a new value
-        void updateRoot(Node* newRoot);
 };

@@ -27,10 +27,6 @@ bool BPlusTree::Node::isFull() const{
 /*----------------------------------------BPlusTree-------------------------------------*/
 BPlusTree::BPlusTree(int maxNumPointers) : maxNumPointers(maxNumPointers){};
 
-void BPlusTree::updateRoot(Node* newRoot){
-    root = newRoot;
-}
-
 void BPlusTree::splitNode(Node* leftNode, int key, string value){
     //Create a sibling node
     Node* rightNode = new Node(leftNode->parent, leftNode->isLeaf, this);
