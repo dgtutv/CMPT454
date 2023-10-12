@@ -79,7 +79,7 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
             return true;
         }
 
-        //Otherwise, if a leaf and the root, should be split among children
+        //Otherwise, if the tree is one level
         else if(node->isLeaf && node->parent == nullptr){
             //Split the node
             map<int, string>::iterator middlePair = splitNodeSingleLevel(node);
@@ -100,7 +100,7 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
                 return handleNodeOverflow(node->parent, middlePair->first, middlePair->second);
             }   
         }
-        //Otherwise, if the parent is not full
+        //Otherwise, if the tree is more than one level, and the parent of the node is not full
         else if(!node->parent->isFull()){
             //Split the child
             Node* newSibling = new Node(node->parent, node->isLeaf, this);
