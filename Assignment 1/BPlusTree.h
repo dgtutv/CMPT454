@@ -39,12 +39,9 @@ class BPlusTree {
         string find(int key);
         void printKeys();
         void printValues();
-        int getMaxNumPointers();
 
         //Helpers
         void printNodeKey(Node* node);  //Prints the keys of the specified node
-        map<int, string>::iterator splitNode(Node* leftNode);   //Splits a node to right and left nodes
-        bool insertInternal(Node* node, int key, string value);     //Inserts a key/value pair into an internal node
+        void splitNode(Node* leftNode);   //Splits a node to right and left nodes
         void updateRoot(Node* newRoot);
-        bool handleNodeOverflow(Node* node, int key, string value);      //Recursively propogates a key up through full parents if needed, handles insertion for leaf nodes
 };
