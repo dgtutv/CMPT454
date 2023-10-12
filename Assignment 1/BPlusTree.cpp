@@ -238,7 +238,7 @@ void BPlusTree::insertInternal(Node* node, int key, string value){
     }
 }
 
- map<int, string>::iterator BPlusTree::splitNode(Node* parent){     //Splits a parent node into two children and distributes the values
+ map<int, string>::iterator BPlusTree::splitNode(Node* parent){     //Splits a parent node into two children and distributes the values, do not use for leaves
     parent->isLeaf = false;
     Node* leftChild = new Node(parent, true, this);
     allNodes.push_back(leftChild);
