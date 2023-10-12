@@ -175,20 +175,35 @@ bool BPlusTree::insert(int key, string value){
 }  
 
 void BPlusTree::printKeys(){
-    printNodeKey(root);
-    cout<<endl;
-    for(vector<Node*>::iterator it = root->children.begin(); it != root->children.end(); it++){
-        printNodeKey(*it);
+    queue<Node*> nodesToPrint;
+    nodesToPrint.push(root);
+
+    //Iterate over the nodesToPrint queue
+    while(!nodesToPrint.empty()){
+        int sizeOfCurrentLevel = nodesToPrint.size();
+
+        //Print the current level
+        for(int i=0; i<sizeOfCurrentLevel; i++){
+            Node* currentNode =  nodesToPrint.front();
+            nodesToPrint.pop();
+            printNodeKey(currentNode);
+
+            //Add the children of the current node to the queue
+            if(!currentNode->children.empty()){
+                for(Node* child : currentNode->children){
+                    nodesToPrint.push(child);
+                }
+            }
+        }
+        cout<<endl<<endl;
     }
-    cout<<endl;
-    cout<<endl;
 }
 
 void BPlusTree::printNodeKey(Node* node){
     cout<<"|";
     for(map<int, string>::iterator it = node->keyValues.begin(); it != node->keyValues.end(); it++){
         cout<<it->first;
-        if(it != prev(node->keyValues.end())){
+        if(next(it) != node->keyValues.end()){
             cout<<" ";
         }
     }
