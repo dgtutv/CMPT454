@@ -131,6 +131,7 @@ BPlusTree::Node* BPlusTree::findNode(int key){
             ++i;
         }
     }
+    return currentNode;
 }
 
 //Each interior/root node must contain floor(maxNumPointers/2) pointers. => floor(maxNumPointers-1/2) values
@@ -155,7 +156,7 @@ bool BPlusTree::insert(int key, string value){
             insertionNode->keyValues.insert(pair<int, string>(key, value));
         }
     }
-
+    return true;
 }  
 
 void BPlusTree::printKeys(){
