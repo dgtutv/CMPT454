@@ -26,6 +26,21 @@ void BPlusTree::updateRoot(Node* newRoot){
     root = newRoot;
 }
 
+void BPlusTree::propogate(Node* node, int key, string value){
+    if(node != NULL){
+        //If there is room in the node, insert the key/value pair 
+        if(!node->isFull()){
+            node->keyValues.insert(pair<int, string>(key, value));
+        }
+
+        //Otherwise,
+        else{
+            //Split the node
+            //Recursively propogate the middle pair
+        }
+    }
+}
+
 //Each interior/root node must contain floor(maxNumPointers/2) pointers. => floor(maxNumPointers-1/2) values
 bool BPlusTree::insert(int key, string value){
     //TODO: check for duplicates first!!
@@ -164,13 +179,18 @@ void BPlusTree::insertInternal(Node* node, int key, string value){
                 }
                     
                 //Otherwise (if the parent is not the root),
+                else{
                     //Update the parent pointer
+                    Node* grandparent = node->parent->parent;
+
+                    
                     //Split the parent into two siblings
                     //Create a new sibling to the original node
                     //Find the corresponding pointer location in the parent for our newSibling
                     //Balance the original node with it's new sibling 
                     //Remove keys that were inserted into the new sibling
-                    //Add the key/value pair to the new sibling 
+                    //Add the key/value pair to the new sibling
+                }
             }
         } 
     }
