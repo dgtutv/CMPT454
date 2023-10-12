@@ -137,6 +137,7 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
         else{
             //Split the node
             Node* newChild = new Node(node->parent, node->isLeaf, this);
+            allNodes.push_back(newChild);
 
             //Balance the node
             int counter = 0;
@@ -162,6 +163,7 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
 
             //Split the parent
             Node* newParent = new Node(node->parent->parent, false, this);
+            allNodes.push_back(newParent);
 
             //Balance the split parents
             counter = 0;
@@ -193,13 +195,22 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
             else{
                 newParent->keyValues.insert(pair<int, string>(newChild->keyValues.begin()->first, newChild->keyValues.begin()->second));
                 newParent->children.push_back(newChild);
-                sort(newParent->children.begin(), newParent->children.end(); compareNodes);
+                sort(newParent->children.begin(), newParent->children.end(), compareNodes);
             }
 
             //If there is no grandfather
             if(node->parent == root){
                 //Make a grandfather
+                Node* newGrandfather = new Node(nullptr, false, this);
+                allNodes.push_back(newGrandfather);
+
                 //Point the grandfather to the split parents
+                newGrandfather->children.push_back(node->parent);
+                newGrandfather->children.push_back(newParent);
+                sort(newGrandfather->children.begin(), newGrandfather->children.end(), compareNodes);
+
+                //Insert the first value of the new parent into the grandfather
+                newGrandfather->keyValues.insert(pair<int, string>(newParent->keyValues.begin()->first, newParent->keyValues.begin()->second));
             }
                 
             //If there is, and it's got room
