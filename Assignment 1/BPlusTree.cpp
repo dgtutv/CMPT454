@@ -96,14 +96,26 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
 
 }
 
+BPlusTree::Node* BPlusTree::findNode(int key){
+    Node* currentNode = root;
+
+}
+
 //Each interior/root node must contain floor(maxNumPointers/2) pointers. => floor(maxNumPointers-1/2) values
 bool BPlusTree::insert(int key, string value){
     //TODO: check for duplicates first!!
     //TODO: make sure leaf nodes point to each other!
 
-    if(root == nullptr){   //If the root does not exist, enter the value into it
+
+    //If the root does not exist, enter the value into it
+    if(root == nullptr){   
         root = new Node(nullptr, true, this);
         allNodes.push_back(root);
+    }
+
+    //Otherwise, find where to insert our pair
+    else{
+        Node* insertionNode = findNode(key);
     }
 
 }  
