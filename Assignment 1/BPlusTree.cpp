@@ -144,6 +144,7 @@ bool BPlusTree::insert(int key, string value){
     if(root == nullptr){   
         root = new Node(nullptr, true, this);
         allNodes.push_back(root);
+        root->keyValues.insert(pair<int, string>(key, value));
     }
 
     //Otherwise, find where to insert our pair
