@@ -79,7 +79,7 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
             return true;
         }
 
-        //Otherwise, if the leaf should be split among children
+        //Otherwise, if a leaf and the root, should be split among children
         else if(node->isLeaf && node->parent == nullptr){
             //Split the node
             map<int, string>::iterator middlePair = splitNode(node);
@@ -133,7 +133,7 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
 
             return true;
         }
-        //If the parent is full and the node is full
+        //If the parent is full and the child is full
         else{
             //Split the node
             Node* newChild = new Node(node->parent, node->isLeaf, this);
@@ -153,7 +153,7 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
                 node->keyValues.erase(keysToRemove[i]);
             }
 
-            //Add the new pair to the appropiate node
+            //Add the new pair to the appropiate node       //TODO: FIX LOGIC
             if(node->keyValues.size() <  newChild->keyValues.size()){
                 node->keyValues.insert(pair<int, string>(key, value));
             }
@@ -186,7 +186,7 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
                 node->parent->children.erase(it);
             }
 
-            //Insert the first value of the new child into the appropiate parent, and point that parent to the new child
+            //Insert the first value of the new child into the appropiate parent, and point that parent to the new child //TODO: fix logic
             if(node->parent->keyValues.size() <  newParent->keyValues.size()){
                 node->parent->keyValues.insert(pair<int, string>(newChild->keyValues.begin()->first, newChild->keyValues.begin()->second));
                 node->parent->children.push_back(newChild);
@@ -213,18 +213,76 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
                 //Insert the first value of the new parent into the grandfather
                 newGrandfather->keyValues.insert(pair<int, string>(newParent->keyValues.begin()->first, newParent->keyValues.begin()->second));
 
-                //Remove the value that was put into the grandfather from the original parent
+                //Remove the value that was put into the new parent from the original node  //TODO: iff there is more than one value 
                 newParent->keyValues.erase(newParent->keyValues.begin()->first);
             }
                 
             //If there is, and it's got room
-                //Add the new parent to the granfather
-                //Sort the grandfather's children
+            else if(!node->parent->parent->isFull()){
+                //Add the new parent to the grandfather
+                node->parent->parent->children.push_back(newParent);
+                sort(node->parent->parent->children.begin(), node->parent->parent->children.end(), compareNodes);    
+
+                //Insert the first value of the new parent into the grandfather, and remove it from the new parent
+                node->parent->parent->keyValues.insert(pair<int, string>(newParent->keyValues.begin()->first, newParent->keyValues.begin()->second));  
+                newParent->keyValues.erase(newParent->keyValues.begin()->first);     
+            }
+                
             //If there is, and it has no room
-                //Propogate the overflow up the tree
+            else{
+                //Split the child, and balance it
+                Node* newChild = new Node(node->parent, node->isLeaf, this);
+                int counter = 0;
+                vector<int> keysToRemove;
+                vector<Node*> pointersToRemove;
+                for(map<int, string>::iterator it = node->keyValues.begin(); it != node->keyValues.end(); it++){
+                    if(counter >= floor((maxNumPointers-1)/2)){
+                        keysToRemove.push_back(it->first);
+                        newChild->keyValues.insert(pair<int, string>(it->first, it->second));
+                        if(node->children.size()>0){    //If the node is a leaf TODO: fix this
+                            pointersToRemove.push_back(node->children[counter+1]);
+                            newChild->children.push_back(node->children[counter+1]);
+                        }
+                    }
+                    counter++;
+                }
+                sort(newChild->children.begin(), newChild->children.end(), compareNodes);
+                for(int i=0; i<keysToRemove.size(); i++){
+                    newChild->keyValues.erase(keysToRemove[i]);
+                }
+                for(int i=0; i<pointersToRemove.size(); i++){
+                    vector<Node*>::iterator it = std::find(node->children.begin(), node->children.end(), pointersToRemove[i]);
+                    newChild->children.erase(it);
+                }
+                sort(node->children.begin(), node->children.end(), compareNodes);
+
+                //Call overflow on the parent of the original child, with the new key/value pair
+                handleNodeOverflow(node->parent, key, value);
+
+                //Find where the new child should link 
+                counter=0;
+                int childValue = newChild->keyValues.begin()->first;
+                for(map<int, string>::iterator it=node->keyValues.begin(); it!=node->keyValues.end(); it++){
+                    if(childValue <= it->first){
+                        break;
+                    }
+                    counter++;
+                }
+
+                //If the pointer we need is free, associate the new child to it 
+                if(node->children.size() < counter+1){
+                    node->children.push_back(newChild);
+                    sort(node->children.begin(), node->children.end(), compareNodes);
+                } 
+                //Otherwise, shift pointers to parent's siblings until works correctly
+                else{
+                    
+                }
+            }
+                
         }
     }
-    return false;       //If the ndoes does not exist, it cannot be inserted into
+    return false;       //If the node does not exist, it cannot be inserted into
 }
 
 bool BPlusTree::insertInternal(Node* node, int key, string value){
