@@ -40,7 +40,7 @@ void BPlusTree::handleNodeOverflow(Node* node, int key, string value){
             Node* leftChild = node->children[0];
             Node* rightChild = node->children[1];
 
-            //Recursively propogate the middle pair to the children
+            //Recursively inserts the key into the children
             if(key < middlePair->first){
                 handleNodeOverflow(leftChild, key, value);
             }
