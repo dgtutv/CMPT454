@@ -26,7 +26,7 @@ void BPlusTree::updateRoot(Node* newRoot){
     root = newRoot;
 }
 
-void BPlusTree::propogate(Node* node, int key, string value){
+void BPlusTree::handleNodeOverflow(Node* node, int key, string value){
     if(node != NULL){
         //If there is room in the node, insert the key/value pair 
         if(!node->isFull()){
@@ -36,7 +36,23 @@ void BPlusTree::propogate(Node* node, int key, string value){
         //Otherwise,
         else{
             //Split the node
-            //Recursively propogate the middle pair
+            map<int, string>::iterator middlePair = splitNode(node);
+            Node* leftChild = node->children[0];
+            Node* rightChild = node->children[1];
+
+            //Recursively propogate the middle pair to the children
+            if(key < middlePair->first){
+                handleNodeOverflow(leftChild, key, value);
+            }
+            else{
+                handleNodeOverflow(rightChild, key, value);
+            }
+
+            //Once split, check if the parent is also full
+            if(node->parent->isFull()){
+                //If so, recursively propogate the middle pair to the parent
+                handleNodeOverflow(node->parent, middlePair->first, middlePair->second);
+            }   
         }
     }
 }
