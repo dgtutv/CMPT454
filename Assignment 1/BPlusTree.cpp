@@ -99,7 +99,12 @@ void BPlusTree::insertInternal(Node* node, int key, string value){
 
         //If not, check if there is room in the node
         if(!node->isOverflow()){
-            handleNodeOverflow(node)
+            handleNodeOverflow(node, key, value);       //If there is no room in the node, handle the overflow
+            return;
+        }
+        else{
+            insertInternal(node->children.back(), key, value);      //If there is room, insert into the end pointer of the node
+            return;
         }
     }
 }
