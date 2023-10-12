@@ -104,12 +104,14 @@ BPlusTree::Node* BPlusTree::findNode(int key){
         if(key <= currentNode->keyValues.begin()->first){
             //See the first child
             currentNode = *currentNode->children.begin();
+            continue;
         }
 
         //If the key is greater than the largest key in the current node
         else if(key >= currentNode->keyValues.rbegin()->first){
             //See the last child
             currentNode = *currentNode->children.rbegin();
+            continue;
         }
 
         //Otherwise, find the corresponding child with the correct key
@@ -206,15 +208,16 @@ int main(int argc, char const *argv[]){
     tree->printKeys();
     tree->insert(8, "8");
     tree->printKeys();
-    tree->insert(64, "64");
-    tree->insert(5, "5");
+    tree->insert(64, "64"); 
+    tree->printKeys();
+    tree->insert(5, "5");   
     tree->printKeys();
     tree->insert(23, "23");
     tree->printKeys();
     tree->insert(6, "6");
     tree->printKeys();
     tree->insert(19, "19");
-    tree->insert(9, "9");
+    tree->insert(9, "9");   //Breaks here
     tree->printKeys();
     tree->insert(7, "7");   //Works until here
     tree->printKeys();
