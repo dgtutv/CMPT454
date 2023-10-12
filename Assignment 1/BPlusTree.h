@@ -9,11 +9,16 @@ class Node{
         bool isLeaf;
         BPlusTree* tree;
     public:
+        //Public data
         map<int, string> keyValues;     //Here I use a map to store key/value pairs
         vector<Node*> children;       //Will be empty if the Node is a leafNode
-        Node(Node* parent, bool isLeaf, BPlusTree* tree);    //Constructor
+
+        //Constructor
+        Node(Node* parent, bool isLeaf, BPlusTree* tree);    
         
-        bool isOverflow() const;      //Checks if the Node is past full
+        //Helpers
+        bool isOverflow() const;        //Checks if the Node is past full
+        bool isFull() const;        //Checks if the Node is full
         friend class BPlusTree;
 };
 

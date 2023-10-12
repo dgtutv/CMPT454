@@ -10,6 +10,10 @@ Node::Node(Node* parent, bool isLeaf, BPlusTree* tree) : parent(parent), isLeaf(
 bool Node::isOverflow() const{
     return keyValues.size() > tree->getMaxNumPointers() -1;
 }
+
+bool Node::isFull() const{
+    return keyValues.size() >= tree->getMaxNumPointers()-1;
+}
 /*----------------------------------------BPlusTree-------------------------------------*/
 BPlusTree::BPlusTree(int maxNumPointers) : maxNumPointers(maxNumPointers){};
 
@@ -31,8 +35,8 @@ bool BPlusTree::insert(int key, string value){
         allNodes.push_back(root);
         root->keyValues.insert(pair<int, string>(key, value));
     }
-    else if(root->children.size() == 0){    //Check if the root has no children
-        if(root->keyValues.size() < maxNumPointers-1){      //If the root is not full, insert into the root
+    else if(root->children.size() == 0){    //Check the root has no children
+        if(!root->isFull()){      //If the root is not full, insert into the root
             root->keyValues.insert(pair<int, string>(key, value));
         }
         else{   //If the root is full
@@ -53,7 +57,7 @@ void BPlusTree::insertInternal(Node* node, int key, string value){
         //Otherwise
         else{
             //If possible, insert into parent and add a new pointer
-            if(node->parent->keyValues.size() < maxNumPointers-2){
+            if(!node->parent->isFull()){
                 node->parent->keyValues.insert(pair<int, string>(key, value));
                 Node* newSibling = new Node(node->parent, true, this);
                 allNodes.push_back(newSibling);
