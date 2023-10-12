@@ -98,22 +98,33 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
 
 BPlusTree::Node* BPlusTree::findNode(int key){
     Node* currentNode = root;
-    while(true){
-        //Get the last value in the currentNode's key/value map
-        map<int, string>::reverse_iterator lastPairIterator = currentNode->keyValues.rbegin();
-        vector<Node*>::reverse_iterator lastChildIterator = currentNode->children.rbegin();
-        if(currentNode->isLeaf){
-            return currentNode;
+
+    while(!currentNode->isLeaf){
+        //If the key is less than or equial to the first key in the current node
+        if(key <= currentNode->keyValues.begin()->first){
+            //See the first child
+            currentNode = *currentNode->children.begin();
         }
-        else{
-            if(key < currentNode->keyValues.begin()->first){
-                currentNode = currentNode->children[0];
-            }
-            else if(key > lastPairIterator->first){
-                currentNode = *lastChildIterator;
-            }
-            else{
-                return currentNode;
+
+        //If the key is greater than the largest key in the current node
+        else if(key >= currentNode->keyValues.rbegin()->first){
+            //See the last child
+            currentNode = *currentNode->children.rbegin();
+        }
+
+        //Otherwise, find the corresponding child with the correct key
+        if(currentNode->keyValues.size()<2){
+            return nullptr;
+        }
+        //Iterate over our keyValues map
+        map<int, string>::iterator it = currentNode->keyValues.begin();
+        int prevKey = it->first;
+        int currKey;
+        for(int i=1; i<currentNode->keyValues.size(); i++){
+            currKey = (it++)->first;
+            //If we find our key between two values in the map, go to the corresponding child
+            if(prevKey <= key < currKey){
+                currentNode = currentNode->children[i];
             }
         }
     }
