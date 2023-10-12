@@ -98,7 +98,25 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
 
 BPlusTree::Node* BPlusTree::findNode(int key){
     Node* currentNode = root;
-
+    while(true){
+        //Get the last value in the currentNode's key/value map
+        map<int, string>::reverse_iterator lastPairIterator = currentNode->keyValues.rbegin();
+        vector<Node*>::reverse_iterator lastChildIterator = currentNode->children.rbegin();
+        if(currentNode->isLeaf){
+            return currentNode;
+        }
+        else{
+            if(key < currentNode->keyValues.begin()->first){
+                currentNode = currentNode->children[0];
+            }
+            else if(key > lastPairIterator->first){
+                currentNode = *lastChildIterator;
+            }
+            else{
+                return currentNode;
+            }
+        }
+    }
 }
 
 //Each interior/root node must contain floor(maxNumPointers/2) pointers. => floor(maxNumPointers-1/2) values
@@ -116,6 +134,12 @@ bool BPlusTree::insert(int key, string value){
     //Otherwise, find where to insert our pair
     else{
         Node* insertionNode = findNode(key);
+        if(insertionNode->isFull()){
+            splitNode(insertionNode, key, value);
+        }
+        else{
+            insertionNode->keyValues.insert(pair<int, string>(key, value));
+        }
     }
 
 }  
