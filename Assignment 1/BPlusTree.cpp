@@ -74,6 +74,9 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
     if(leftNode->children.size() == 0){
         leftNode->isLeaf = true;
         rightNode->isLeaf = true;
+        if(leftNode->nextLeaf != nullptr){
+            rightNode->nextLeaf = leftNode->nextLeaf;
+        }
         leftNode->nextLeaf = rightNode;
     }
 
@@ -255,7 +258,7 @@ int main(int argc, char const *argv[]){
     tree->insert(6, "6");
     cout<<"\nInsert 6\n";
     tree->printKeys();
-    tree->printLeaves();    //TODO: breaks here
+    tree->printLeaves(); 
     tree->insert(19, "19");
     cout<<"\nInsert 19\n";
     tree->printKeys();
