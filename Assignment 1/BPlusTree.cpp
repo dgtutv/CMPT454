@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <math.h>
 #include <iostream>
+#include <queue>
 using namespace std;
 
 /*------------------------------------------Node----------------------------------------*/
@@ -93,7 +94,40 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
         }
         //Otherwise,
         else{
+            //Insert the value into the parent
+            handleNodeOverflow(node->parent, key, value);
 
+            //Split the child
+            Node* newSibling = new Node(node->parent, true, this);
+            allNodes.push_back(newSibling);
+            node->keyValues.insert(pair<int, string>(key, value));
+
+            //Point the parent to new sibling 
+            int counter=0;
+            for(map<int, string>::iterator it=node->parent->keyValues.begin(); it!= node->parent->keyValues.end(); it++){
+                if(key == it->first){
+                    node->parent->children[counter] = newSibling;
+                    break;
+                }
+                counter++;
+            }
+
+            //Balance values with the new sibling
+            vector<int> keysToRemove;
+            counter=0;
+            for(map<int, string>::iterator it=node->keyValues.begin(); it!=node->keyValues.end(); it++){
+                if(counter >= floor((maxNumPointers-1)/2)){
+                    keysToRemove.push_back(it->first);
+                    newSibling->keyValues.insert(*it);
+                }
+                counter++;
+            }
+
+            for(int i=0; i<keysToRemove.size(); i++){
+                node->keyValues.erase(keysToRemove[i]);
+            }
+
+            return true;
         }
     }
     return false;       //If the ndoes does not exist, it cannot be inserted into
