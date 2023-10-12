@@ -28,6 +28,7 @@ bool BPlusTree::insert(int key, string value){
 
     if(root == NULL){   //If the root does not exist, enter the value into it
         root = new Node(NULL, true, this);
+        allNodes.push_back(root);
         root->keyValues.insert(pair<int, string>(key, value));
     }
     else if(root->children.size() == 0){    //Check if the root has no children
@@ -55,6 +56,7 @@ void BPlusTree::insertInternal(Node* node, int key, string value){
             if(node->parent->keyValues.size() < maxNumPointers-2){
                 node->parent->keyValues.insert(pair<int, string>(key, value));
                 Node* newSibling = new Node(node->parent, true, this);
+                allNodes.push_back(newSibling);
 
                 //Find the corresponding pointer location
                 int counter = 1;    //We want to insert to the right of the corresponding location
@@ -87,14 +89,75 @@ void BPlusTree::insertInternal(Node* node, int key, string value){
             //If the parent is full,
             else{
                 //If the parent is the root
-                    //Create a new root with the middle child 
+                if(node->parent == root){
+                    //Create a new root
+                    Node* newRoot = new Node(NULL, false, this);
+                    allNodes.push_back(newRoot);
+                    pair<int, string> middlePair;
+
                     //Split the parent into two parent siblings (maybe uncles?)
+                    Node* newUncle = new Node(newRoot, false, this);
+                    allNodes.push_back(newUncle);
+                    node->parent->parent = newRoot;
+
+                    //Balance the parent's key/value pairs, and pointers with it's new sibling
+                    int counter = 0;
+                    vector<int> keysToRemove;
+                    for(map<int, string>::iterator it=node->parent->keyValues.begin(); it!=node->parent->keyValues.end(); it++){
+                        //All pointers and key/value pairs at and beyond the middle pair should be moved to the uncle
+                        if(counter >= floor((maxNumPointers-1)/2)){     
+                            middlePair = pair<int, string>(it->first, it->second);
+                            keysToRemove.push_back(it->first);
+                            newUncle->keyValues.insert(pair<int, string>(it->first, it->second));
+                            newUncle->children.push_back(node->parent->children[counter]);
+                            node->parent->children[counter] = NULL;
+                        }
+                        counter++;
+                    }
+
+                    //Remove the keys that were moved to the uncle from the original parent
+                    for(int i=0; i<keysToRemove.size(); i++){
+                        node->parent->keyValues.erase(keysToRemove[i]);
+                    }
+
+                    //Insert the middlePair to the new root
+                    newRoot->keyValues.insert(middlePair);
+                
                     //Distribute the new root's pointers
+                    newRoot->children.push_back(node->parent);
+                    newRoot->children.push_back(newUncle);
+                    root = newRoot;
+
                     //Create a new sibling to our node
+                    Node* newSibling = new Node(node->parent, true, this);
+                    allNodes.push_back(newSibling);
+
                     //Find the corresponding pointer location in the parent for our newSibling
+                    counter = 1;
+                    for(map<int, string>::iterator it=node->parent->keyValues.begin(); it!=node->parent->keyValues.end(); it++){
+                        if(it->first == key){
+                            node->parent->children[counter] = newSibling;
+                            break;
+                        }
+                        counter++;
+                    }
+
                     //Balance the node with it's new sibling 
+                    node->keyValues.insert(pair<int, string>(key, value));
+                    keysToRemove.clear();
+                    for(map<int, string>::iterator it = node->keyValues.begin(); it != node->keyValues.end(); it++){
+                        if(it->first >= key){
+                            newSibling->keyValues.insert(pair<int, string>(it->first, it->second));
+                            keysToRemove.push_back(it->first);
+                        }
+                    }
+
                     //Remove keys that were inserted into the new sibling
-                    //Add the key/value pair to the new sibling 
+                    for(int i=0; i<keysToRemove.size(); i++){
+                        node->keyValues.erase(keysToRemove[i]);
+                    }
+                }
+                    
                 //Otherwise (if the parent is not the root),
                     //Update the parent pointer
                     //Split the parent into two siblings
@@ -141,6 +204,7 @@ void BPlusTree::insertInternal(Node* node, int key, string value){
         //Update the root if the node is the root
         if(node == root){
             Node* newRoot = new Node(nullptr, false, this);
+            allNodes.push_back(newRoot);
             newRoot->children.push_back(leftChild);
             newRoot->children.push_back(rightChild);
             newRoot->keyValues.insert(*middlePair);
@@ -149,10 +213,12 @@ void BPlusTree::insertInternal(Node* node, int key, string value){
     }
 }
 
- map<int, string>::iterator BPlusTree::splitNode(Node* parent){
+ map<int, string>::iterator BPlusTree::splitNode(Node* parent){     //Splits a parent node into two children and distributes the values
     parent->isLeaf = false;
     Node* leftChild = new Node(parent, true, this);
+    allNodes.push_back(leftChild);
     Node* rightChild = new Node(parent, true, this);
+    allNodes.push_back(rightChild);
     parent->children.push_back(leftChild);
     parent->children.push_back(rightChild);
     map<int, string>::iterator middlePair;
