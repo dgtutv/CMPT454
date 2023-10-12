@@ -100,14 +100,14 @@ BPlusTree::Node* BPlusTree::findNode(int key){
     Node* currentNode = root;
 
     while(!currentNode->isLeaf){
-        //If the key is less than or equial to the first key in the current node
+        //If the key is less than or equal to the first key in the current node
         if(key <= currentNode->keyValues.begin()->first){
             //See the first child
             currentNode = *currentNode->children.begin();
             continue;
         }
 
-        //If the key is greater than the largest key in the current node
+        //If the key is greater than or equal to the largest key in the current node
         else if(key >= currentNode->keyValues.rbegin()->first){
             //See the last child
             currentNode = *currentNode->children.rbegin();
@@ -118,12 +118,12 @@ BPlusTree::Node* BPlusTree::findNode(int key){
         if(currentNode->keyValues.size()<2){
             return nullptr;
         }
-        //Iterate over our keyValues map
+        //Iterate over our keyValues map    //TODO: BROKEN
         int prevKey = currentNode->keyValues.begin()->first;
         int currKey;
         int i=1;
-        for(map<int, string>::iterator it=currentNode->keyValues.begin(); it != currentNode->keyValues.end(); ++it){
-            currKey = it->first;
+        for(map<int, string>::iterator it=currentNode->keyValues.begin(); it != currentNode->keyValues.end()--; ++it){
+            currKey = (++it)->first;
             //If we find our key between two values in the map, go to the corresponding child
             if(prevKey <= key && key < currKey){
                 currentNode = currentNode->children[i];
@@ -205,21 +205,31 @@ int main(int argc, char const *argv[]){
     tree->insert(21, "21");
     tree->insert(2, "2");
     tree->insert(11, "11");
+    cout<<"Insert 21, 2, 11\n";
     tree->printKeys();
     tree->insert(8, "8");
+    cout<<"Insert 8\n";
     tree->printKeys();
-    tree->insert(64, "64"); 
+    tree->insert(64, "64");
+    cout<<"Insert 64\n"; 
     tree->printKeys();
-    tree->insert(5, "5");   
+    tree->insert(5, "5");
+    cout<<"Insert 5\n";   
     tree->printKeys();
     tree->insert(23, "23");
+    cout<<"Insert 23\n";
     tree->printKeys();
     tree->insert(6, "6");
+    cout<<"Insert 6\n";
     tree->printKeys();
-    tree->insert(19, "19");
-    tree->insert(9, "9");   //Breaks here
+    tree->insert(19, "19");     //Breaks here
+    cout<<"Insert 19\n";
     tree->printKeys();
-    tree->insert(7, "7");   //Works until here
+    tree->insert(9, "9");
+    cout<<"Insert 9\n";
+    tree->printKeys();
+    tree->insert(7, "7");
+    cout<<"Insert 7\n";
     tree->printKeys();
 }
 
