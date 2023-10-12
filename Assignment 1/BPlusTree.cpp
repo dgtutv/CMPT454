@@ -70,8 +70,8 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
             return true;
         }
 
-        //Otherwise,
-        else{
+        //Otherwise, if the leaf should be split among children
+        else if(node->isLeaf && (node->parent == nullptr || node->parent->isFull())){
             //Split the node
             map<int, string>::iterator middlePair = splitNode(node);
             Node* leftChild = node->children[0];
@@ -90,6 +90,10 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
                 //If so, recursively propogate the middle pair to the parent
                 return handleNodeOverflow(node->parent, middlePair->first, middlePair->second);
             }   
+        }
+        //Otherwise,
+        else{
+
         }
     }
     return false;       //If the ndoes does not exist, it cannot be inserted into
@@ -166,8 +170,10 @@ int main(int argc, char const *argv[]){
     tree->printKeys();
     tree->insert(8, "8");
     tree->printKeys();
-    tree->insert(64, "64"); //Only gets inserted into the root, should only be in the child
+    tree->insert(64, "64");
     tree->insert(5, "5");
+    tree->printKeys();
+    tree->insert(23, "23");
     tree->printKeys();
 }
 
