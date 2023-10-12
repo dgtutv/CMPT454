@@ -37,10 +37,13 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
     int counter = 0;
     vector<int> keysToRemove;
     vector<Node*> pointersToRemove;
+
+    //Insert the new key/value into the leftNode
+    leftNode->keyValues.insert(pair<int, string>(key, value));
     
     //Balance the siblings
     for(map<int, string>::iterator it = rightNode->keyValues.begin(); it != rightNode->keyValues.end(); it++){
-        if(counter > floor((maxNumPointers-1)/2)){
+        if(counter > floor(leftNode->keyValues.size()/2)){
             rightNode->keyValues.insert(pair<int, string>(it->first, it->second));
             keysToRemove.push_back(it->first);
             if(!leftNode->isLeaf){
@@ -60,21 +63,18 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
         }
     }
 
-    //Insert the new key/value to the corresponding node
-    if(leftNode->keyValues.size() < rightNode->keyValues.size()){
-        leftNode->keyValues.insert(pair<int, string>(key, value));
-    }
-    else{
-        rightNode->keyValues.insert(pair<int, string>(key, value));
-    }
-
     //If a parent does not exist, make an empty one
     if(leftNode == root){
         Node* newParent = new Node(nullptr, false, this);
         leftNode->parent = newParent;
         rightNode->parent = newParent;
-        leftNode->isLeaf = false;
-        rightNode->isLeaf = false;
+        newParent->children.push_back(leftNode);
+    }
+
+    //Update leftNode and rightNode's isLeaf booleans
+    if(leftNode->children.size() == 0){
+        leftNode->isLeaf = true;
+        rightNode->isLeaf = true;
     }
 
     //If there is a parent, but it is full, recursively call splitNode on the parent
