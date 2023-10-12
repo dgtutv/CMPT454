@@ -7,8 +7,10 @@ using namespace std;
 
 /*------------------------------Compare function for nodes-------------------------------*/
 bool compareNodes(const BPlusTree::Node* a, const BPlusTree::Node* b){
-    //Compare nodes based on the first value in their keyValues map
-    return a->keyValues.begin()->first < b->keyValues.begin()->first;
+    if (!a->keyValues.empty() && !b->keyValues.empty()) {
+        return a->keyValues.begin()->first < b->keyValues.begin()->first;
+    }
+    return false;       //Return false if one or both of the nodes has no keys
 }
 
 /*------------------------------------------Node----------------------------------------*/
@@ -108,12 +110,6 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
             allNodes.push_back(newSibling);
             node->keyValues.insert(pair<int, string>(key, value));
 
-            //Blindly add the new sibling to the parent's children
-            node->parent->children.push_back(newSibling);       
-
-            //Sort the parent's children based on the first key in each child
-            sort(node->parent->children.begin(), node->parent->children.end(), compareNodes);
-
             //Balance values with the new sibling
             vector<int> keysToRemove;
             int counter = 0;
@@ -128,6 +124,12 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
             for(int i=0; i<keysToRemove.size(); i++){
                 node->keyValues.erase(keysToRemove[i]);
             }
+
+            //Blindly add the new sibling to the parent's children
+            node->parent->children.push_back(newSibling);       
+
+            //Sort the parent's children based on the first key in each child
+            sort(node->parent->children.begin(), node->parent->children.end(), compareNodes);
 
             return true;
         }
@@ -199,6 +201,7 @@ void BPlusTree::printKeys(){
         }
         cout<<endl<<endl;
     }
+    cout<<"--------------------------------\n";
 }
 
 void BPlusTree::printNodeKey(Node* node){
@@ -227,6 +230,11 @@ int main(int argc, char const *argv[]){
     tree->insert(23, "23");
     tree->printKeys();
     tree->insert(6, "6");
+    tree->printKeys();
+    tree->insert(19, "19");
+    tree->insert(9, "9");
+    tree->printKeys();
+    tree->insert(7, "7");   //Works until here
     tree->printKeys();
 }
 
