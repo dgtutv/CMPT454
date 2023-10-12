@@ -5,13 +5,13 @@
 using namespace std;
 
 /*------------------------------------------Node----------------------------------------*/
-Node::Node(Node* parent, bool isLeaf, BPlusTree* tree) : parent(parent), isLeaf(isLeaf), tree(tree){};
+BPlusTree::Node::Node(Node* parent, bool isLeaf, BPlusTree* tree) : parent(parent), isLeaf(isLeaf), tree(tree){};
 
-bool Node::isOverflow() const{
+bool BPlusTree::Node::isOverflow() const{
     return keyValues.size() > tree->getMaxNumPointers() -1;
 }
 
-bool Node::isFull() const{
+bool BPlusTree::Node::isFull() const{
     return keyValues.size() >= tree->getMaxNumPointers()-1;
 }
 
