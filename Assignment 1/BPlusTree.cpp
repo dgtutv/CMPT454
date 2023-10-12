@@ -103,7 +103,7 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
         //Otherwise, if the parent is not full
         else if(!node->parent->isFull()){
             //Split the child
-            Node* newSibling = new Node(node->parent, true, this);
+            Node* newSibling = new Node(node->parent, node->isLeaf, this);
             allNodes.push_back(newSibling);
             node->keyValues.insert(pair<int, string>(key, value));
 
@@ -136,13 +136,72 @@ bool BPlusTree::handleNodeOverflow(Node* node, int key, string value){
         //If the parent is full and the node is full
         else{
             //Split the node
-            //TODO: The value that goes into the parent should be the first value of the new node
+            Node* newChild = new Node(node->parent, node->isLeaf, this);
+
             //Balance the node
+            int counter = 0;
+            vector<int> keysToRemove;
+            for(map<int, string>::iterator it=node->keyValues.begin(); it != node->keyValues.end(); it++){
+                if(counter >= floor((maxNumPointers-1)/2)){
+                    keysToRemove.push_back(it->first);
+                    newChild->keyValues.insert(pair<int, string>(it->first, it->second));
+                }
+                counter++;
+            }
+            for(int i=0; i<keysToRemove.size(); i++){
+                node->keyValues.erase(keysToRemove[i]);
+            }
+
+            //Add the new pair to the appropiate node
+            if(node->keyValues.size() <  newChild->keyValues.size()){
+                node->keyValues.insert(pair<int, string>(key, value));
+            }
+            else{
+                newChild->keyValues.insert(pair<int, string>(key, value));
+            }
+
             //Split the parent
-            //Point the split parents to the nodes
+            Node* newParent = new Node(node->parent->parent, false, this);
+
+            //Balance the split parents
+            counter = 0;
+            keysToRemove.clear();
+            vector<Node*> pointersToRemove;
+            for(map<int, string>::iterator it=node->parent->keyValues.begin(); it!=node->parent->keyValues.end(); it++){
+                if(counter >= floor((maxNumPointers-1)/2)){
+                    keysToRemove.push_back(it->first);
+                    pointersToRemove.push_back(node->parent->children[counter+1]);
+                    newParent->keyValues.insert(pair<int, string>(it->first, it->second));
+                    newParent->children.push_back(node->parent->children[counter+1]);
+                }
+                counter++;
+            }
+            for(int i=0; i<keysToRemove.size(); i++){
+                node->parent->keyValues.erase(keysToRemove[i]);
+            }
+            for(int i=0; i<pointersToRemove.size(); i++){
+                vector<Node*>::iterator it = std::find(node->parent->children.begin(), node->parent->children.end(), pointersToRemove[i]);
+                node->parent->children.erase(it);
+            }
+
+            //Insert the first value of the new child into the appropiate parent, and point that parent to the new child
+            if(node->parent->keyValues.size() <  newParent->keyValues.size()){
+                node->parent->keyValues.insert(pair<int, string>(newChild->keyValues.begin()->first, newChild->keyValues.begin()->second));
+                node->parent->children.push_back(newChild);
+                sort(node->parent->children.begin(), node->parent->children.end(), compareNodes);
+            }
+            else{
+                newParent->keyValues.insert(pair<int, string>(newChild->keyValues.begin()->first, newChild->keyValues.begin()->second));
+                newParent->children.push_back(newChild);
+                sort(newParent->children.begin(), newParent->children.end(); compareNodes);
+            }
+
             //If there is no grandfather
+            if(node->parent == root){
                 //Make a grandfather
                 //Point the grandfather to the split parents
+            }
+                
             //If there is, and it's got room
                 //Add the new parent to the granfather
                 //Sort the grandfather's children
