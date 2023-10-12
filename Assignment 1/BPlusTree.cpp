@@ -65,21 +65,12 @@ bool BPlusTree::insert(int key, string value){
     if(root == NULL){   //If the root does not exist, enter the value into it
         root = new Node(NULL, true, this);
         allNodes.push_back(root);
-        root->keyValues.insert(pair<int, string>(key, value));
     }
-    else if(root->children.size() == 0){    //Check the root has no children
-        if(!root->isFull()){      //If the root is not full, insert into the root
-            root->keyValues.insert(pair<int, string>(key, value));
-        }
-        else{   //If the root is full
-            insertInternal(root, key, value);
-        }
-    }
-    //Make some sort of recursive function that can call on the root's children
-    return false;
+    
+    return insertInternal(root, key, value);;
 }  
 
-void BPlusTree::insertInternal(Node* node, int key, string value){
+bool BPlusTree::insertInternal(Node* node, int key, string value){
     //If the node is a leaf, simply call our recursiveInsertion method
     if(node->children.empty()){
         handleNodeOverflow(node, key, value);
