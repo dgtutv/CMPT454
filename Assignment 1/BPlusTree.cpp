@@ -219,9 +219,15 @@ bool BPlusTree::remove(int key){
                     leftSibling = *it;
                 }
                 if((*it) == leaf && counter < parent->children.size()-1){
-                    rightSibling = *it;
+                    rightSibling = (*it)->nextLeaf;
                 }
                 counter++;
+            }
+
+            //If the left sibling is more than half full
+            if(leftSibling != nullptr && leftSibling->keyValues.size() > floor((maxNumPointers-1)/2)){
+                //Give one of leftSibling's keys to the leaf
+                redistribute(leftSibling, leaf);
             }
         }
     }
