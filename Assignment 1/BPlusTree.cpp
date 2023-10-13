@@ -124,6 +124,7 @@ BPlusTree::Node* BPlusTree::findNode(int key){
         if(currentNode->keyValues.size()<2){
             return nullptr;
         }
+
         //Iterate over our keyValues map 
         int currKey;
         int i=0;
@@ -148,6 +149,7 @@ BPlusTree::Node* BPlusTree::findNode(int key){
 string BPlusTree::find(int key){
     //Find the node that the key is in
     Node* node = findNode(key);
+    
     //If the key was not found, return null
     if(node == nullptr){
         return "";
@@ -320,6 +322,12 @@ int main(int argc, char const *argv[]){
     tree->insert(21, "twenty one");
     tree->insert(2, "two");
     tree->insert(11, "eleven");
+    if(tree->insert(2, "five hundred") == false){
+        cout<<"Passed duplicate test"<<endl;
+    }
+    else{
+        cout<<"Failed duplicate test"<<endl;
+    }
     cout<<"\nInsert 21, 2, 11\n";
     tree->printKeys();
     tree->printLeaves();
