@@ -149,7 +149,7 @@ BPlusTree::Node* BPlusTree::findNode(int key){
 string BPlusTree::find(int key){
     //Find the node that the key is in
     Node* node = findNode(key);
-    
+
     //If the key was not found, return null
     if(node == nullptr){
         return "";
@@ -159,17 +159,17 @@ string BPlusTree::find(int key){
 }
 
 bool BPlusTree::insert(int key, string value){
-    //Check if the key is already present
-    if(find(key).size() != 0){
-        return false;       //TODO: test
-    }
-
     //If the root does not exist, enter the value into it
     if(root == nullptr){   
         root = new Node(nullptr, true, this);
         allNodes.push_back(root);
         root->keyValues.insert(pair<int, string>(key, value));
     }
+
+        //Check if the key is already present
+        if(find(key).size() != 0){
+            return false;
+        }
 
     //Otherwise, find where to insert our pair
     else{
