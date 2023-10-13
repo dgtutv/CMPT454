@@ -254,7 +254,7 @@ void BPlusTree::redistribute(Node* victim, Node* receiver, bool victimLeftOfRece
 }
 
 void BPlusTree::coalesce(Node* victim, Node* receiver){
-
+    
 }
 
 void BPlusTree::removeFromNode(Node* node, int key, Node* pointer){
@@ -308,13 +308,11 @@ bool BPlusTree::remove(int key){
     //Find the associated leaf node
     Node* leaf = findNode(key);
 
-    if(leaf == nullptr){
-        return false;
-    }
-
-    else{
+    if(leaf != nullptr){
         removeFromNode(leaf, key, nullptr);
+        return true;
     }
+    return false;
 }
 
 void BPlusTree::printLeaves(){
