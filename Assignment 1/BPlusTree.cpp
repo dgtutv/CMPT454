@@ -450,12 +450,14 @@ int main(int argc, char const *argv[]){
     tree->insert(9, "nine");
     tree->insert(7, "seven");   
     tree->insert(31, "thirty one");  
-    tree->insert(45, "fourty five"); 
+    tree->insert(45, "fourty five");
     tree->insert(39, "thirty nine");    
     tree->insert(60, "sixty");   
     tree->insert(51, "fifty one");
     tree->insert(97, "ninety seven");
-    tree->insert(77, "seventy seven");
+    tree->insert(77, "seventy seven");  //Pointers are breaking here, when I split the parent block, the 45 pointer is given to the new block, rather than staying with the old
+
+    tree->remove(45);   //Not being removed for whatever reason
     tree->printKeys();
 }
 
