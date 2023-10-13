@@ -29,6 +29,13 @@ BPlusTree::Node::~Node(){}  //Data is redirected outside of the class, not delet
 /*----------------------------------------BPlusTree-------------------------------------*/
 BPlusTree::BPlusTree(int maxNumPointers) : maxNumPointers(maxNumPointers){};
 
+void BPlusTree::updateParentPointers(Node* parent){
+    for(auto it=parent->children.begin(); it!=parent->children.end(); it++){
+        (*it)->parent = parent;
+        updateParentPointers(*it);
+    }
+}
+
 void BPlusTree::splitNode(Node* leftNode, int key, string value){
     //Create a sibling node
     Node* rightNode = new Node(leftNode->parent, leftNode->isLeaf, this);
@@ -102,6 +109,9 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
         rightNode->keyValues.erase(rightNode->keyValues.begin()->first);
     }
 
+    //Update all of the parent pointers in the tree
+    updateParentPointers(root);
+
 }
 
 BPlusTree::Node* BPlusTree::findNode(int key){
@@ -168,10 +178,10 @@ bool BPlusTree::insert(int key, string value){
         root->keyValues.insert(pair<int, string>(key, value));
     }
 
-        //Check if the key is already present
-        if(find(key).size() != 0){
-            return false;
-        }
+    //Check if the key is already present
+    if(find(key).size() != 0){
+        return false;
+    }
 
     //Otherwise, find where to insert our pair
     else{
@@ -438,20 +448,20 @@ int main(int argc, char const *argv[]){
     tree->insert(6, "six");
     tree->insert(19, "nineteen");
     tree->insert(9, "nine");
-    tree->insert(7, "seven");
+    tree->insert(7, "seven");   
     cout<<"\nInsert 7\n";
     tree->printKeys();
-    tree->insert(31, "thirty one");
+    tree->insert(31, "thirty one");   
     cout<<"\nInsert 31\n";
     tree->printKeys();
-    tree->insert(39, "thirty nine");
-    cout<<"\nInsert 39\n";  //Breaks here
-    // tree->printKeys();
-    // tree->insert(45, "fourty five");
-    // tree->insert(51, "fifty one");
-    // tree->insert(60, "sixty");
-    // tree->insert(97, "ninety seven");
-    // cout<<"\nInsert more values\n";
-    // tree->printKeys();
+    tree->insert(39, "thirty nine");    
+    cout<<"\nInsert 39\n";  //Works up to here now
+    tree->printKeys();
+    tree->insert(45, "fourty five");
+    tree->insert(51, "fifty one");
+    tree->insert(60, "sixty");
+    tree->insert(97, "ninety seven");
+    cout<<"\nInsert more values\n";
+    tree->printKeys();
 }
 
