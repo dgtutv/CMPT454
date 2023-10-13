@@ -150,15 +150,17 @@ string BPlusTree::find(int key){
     Node* node = findNode(key);
     //If the key was not found, return null
     if(node == nullptr){
-        return nullptr;
+        return "";
     }
     //Otherwise, return the value corresponding with the key in the node
     return node->keyValues.find(key)->second;
 }
 
-//Each interior/root node must contain floor(maxNumPointers/2) pointers. => floor(maxNumPointers-1/2) values
 bool BPlusTree::insert(int key, string value){
-    //TODO: check for duplicates first!! (do so by implementing find, and seeing if you get a value)
+    //Check if the key is already present
+    if(find(key).size() != 0){
+        return false;       //TODO: test
+    }
 
     //If the root does not exist, enter the value into it
     if(root == nullptr){   
