@@ -50,4 +50,5 @@ class BPlusTree {
         void coalesce(Node* victim, Node* receiver);        //Coalesces victim into receiver
         void removeFromNode(Node* node, int key, Node* pointer);        //Pointer is null if removing from a leaf
         int findIndexOfNodeInParent(Node* child);
+        int findAssociatedKeyOfNodeInParent(Node* child);
 };

@@ -185,7 +185,14 @@ bool BPlusTree::insert(int key, string value){
 }  
 
 int BPlusTree::findIndexOfNodeInParent(Node* child){
-    
+    Node* parent = child->parent;
+    int i=0;
+    for(auto it = parent->children.begin(); it != parent->children.end(); it++){
+        if(*it == child){
+            return i;
+        }
+        i++;
+    }
 }
 
 void BPlusTree::redistribute(Node* victim, Node* receiver, bool victimLeftOfReceiver){
@@ -194,7 +201,9 @@ void BPlusTree::redistribute(Node* victim, Node* receiver, bool victimLeftOfRece
     if(victimLeftOfReceiver){
         keysToRemove.push_back(victim->keyValues.rbegin()->first);
         receiver->keyValues.insert(pair<int, string>(victim->keyValues.rbegin()->first, victim->keyValues.rbegin()->second));
-        //Replace the parent value corresponding to the reciever with the new value in the parent
+        //Replace the parent value corresponding to the reciever with the new first value in the receiver
+        int indexOfNodeInParent = findIndexOfNodeInParent(receiver);
+        //Remove 
         if(!receiver->isLeaf){
             childrenToRemove.push_back(*victim->children.rbegin());
             receiver->children.push_back(*victim->children.rbegin());
