@@ -253,8 +253,8 @@ void BPlusTree::redistribute(Node* victim, Node* receiver, bool victimLeftOfRece
     }
 }
 
-void BPlusTree::coalesce(Node* victim, Node* receiver){
-    
+void BPlusTree::coalesce(Node* victim, Node* receiver, bool victimLeftOfReceiver){
+
 }
 
 void BPlusTree::removeFromNode(Node* node, int key, Node* pointer){
