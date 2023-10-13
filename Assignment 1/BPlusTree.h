@@ -46,7 +46,7 @@ class BPlusTree {
         void printNodeKey(Node* node);  //Prints the keys of the specified node
         void splitNode(Node* leftNode, int key, string value);   //Splits a node to right and left nodes, and inserts a new value
         Node* findNode(int key);        //Finds the leaf node that should contain a given key
-        void redistribute(Node* victim, Node* receiver);    //Redistributes a value (and a pointer if interior) from the victim to the reciever
+        void redistribute(Node* victim, Node* receiver, bool victimLeftOfReceiver);    //Redistributes a value (and a pointer if interior) from the victim to the reciever
         void coalesce(Node* victim, Node* receiver);        //Coalesces victim into receiver
         void removeFromNode(Node* node, int key, Node* pointer);        //Pointer is null if removing from a leaf
 };

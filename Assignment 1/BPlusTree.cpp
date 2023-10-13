@@ -180,7 +180,7 @@ bool BPlusTree::insert(int key, string value){
     return true;
 }  
 
-void BPlusTree::redistribute(Node* victim, Node* receiver){
+void BPlusTree::redistribute(Node* victim, Node* receiver, bool victimLeftOfReceiver){
 
 }
 
@@ -218,11 +218,11 @@ void BPlusTree::removeFromNode(Node* node, int key, Node* pointer){
         }
         //If the left sibling exists and is more than half full, redistribute from the left sibling
         if(leftSibling != nullptr && leftSibling->keyValues.size() > floor((maxNumPointers-1)/2)){
-            redistribute(leftSibling, node);
+            redistribute(leftSibling, node, true);
         }
         //Otherwise, if the right sibling exists and is more than half full, redistribute from the right sibling
         else if(rightSibling != nullptr && rightSibling->keyValues.size() > floor((maxNumPointers-1)/2)){
-            redistribute(rightSibling, node);
+            redistribute(rightSibling, node, false);
         }
         //Otherwise, if the left sibling exists, but is exactly half full, coalesce with the left sibling
         else if(leftSibling != nullptr){
