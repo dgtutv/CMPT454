@@ -104,8 +104,8 @@ BPlusTree::Node* BPlusTree::findNode(int key){
     Node* currentNode = root;
 
     while(!currentNode->isLeaf){
-        //If the key is less than or equal to the first key in the current node
-        if(key <= currentNode->keyValues.begin()->first){
+        //If the key is less than the first key in the current node
+        if(key < currentNode->keyValues.begin()->first){
             //See the first child
             currentNode = *currentNode->children.begin();
             continue;
@@ -248,112 +248,112 @@ int main(int argc, char const *argv[]){
     tree->insert(21, "twenty one");
     tree->insert(2, "two");
     tree->insert(11, "eleven");
-    // cout<<"\nInsert 21, 2, 11\n";
-    // tree->printKeys();
-    // tree->printLeaves();
-    cout<<tree->find(21)<<", ";
-    cout<<tree->find(2)<<", ";
-    cout<<tree->find(11)<<", ";
-    cout<<tree->find(85)<<endl;
+    cout<<"\nInsert 21, 2, 11\n";
+    tree->printKeys();
+    tree->printLeaves();
+    // cout<<tree->find(21)<<", ";
+    // cout<<tree->find(2)<<", ";
+    // cout<<tree->find(11)<<", ";
+    // cout<<tree->find(85)<<endl;
     tree->insert(8, "eight");
-    // cout<<"\nInsert 8\n";
-    // tree->printKeys();
-    // tree->printLeaves();
-    cout<<tree->find(21)<<", ";
-    cout<<tree->find(2)<<", ";
-    cout<<tree->find(11)<<", "; //Cant find
-    cout<<tree->find(8)<<", ";
-    cout<<tree->find(85)<<endl;
+    cout<<"\nInsert 8\n";
+    tree->printKeys();
+    tree->printLeaves();
+    // cout<<tree->find(21)<<", ";
+    // cout<<tree->find(2)<<", ";
+    // cout<<tree->find(11)<<", ";
+    // cout<<tree->find(8)<<", ";
+    // cout<<tree->find(85)<<endl;
     tree->insert(64, "sixty four");
-    // cout<<"\nInsert 64\n"; 
-    // tree->printKeys();
-    // tree->printLeaves();
-    cout<<tree->find(21)<<", ";
-    cout<<tree->find(2)<<", ";
-    cout<<tree->find(11)<<", "; //Cant find
-    cout<<tree->find(8)<<", ";
-    cout<<tree->find(64)<<", ";
-    cout<<tree->find(85)<<endl;
+    cout<<"\nInsert 64\n"; 
+    tree->printKeys();
+    tree->printLeaves();
+    // cout<<tree->find(21)<<", ";
+    // cout<<tree->find(2)<<", ";
+    // cout<<tree->find(11)<<", ";
+    // cout<<tree->find(8)<<", ";
+    // cout<<tree->find(64)<<", ";
+    // cout<<tree->find(85)<<endl;
     tree->insert(5, "five");
-    // cout<<"\nInsert 5\n";   
-    // tree->printKeys();
-    // tree->printLeaves();
-    cout<<tree->find(21)<<", ";
-    cout<<tree->find(2)<<", ";
-    cout<<tree->find(11)<<", ";
-    cout<<tree->find(8)<<", "; //Cant find
-    cout<<tree->find(64)<<", ";
-    cout<<tree->find(5)<<", ";
-    cout<<tree->find(85)<<endl;
+    cout<<"\nInsert 5\n";   
+    tree->printKeys();
+    tree->printLeaves();
+    // cout<<tree->find(21)<<", ";
+    // cout<<tree->find(2)<<", ";
+    // cout<<tree->find(11)<<", ";
+    // cout<<tree->find(8)<<", ";
+    // cout<<tree->find(64)<<", ";
+    // cout<<tree->find(5)<<", ";
+    // cout<<tree->find(85)<<endl;
     tree->insert(23, "twenty three");
-    // cout<<"\nInsert 23\n";
-    // tree->printKeys();
-    // tree->printLeaves();
-    cout<<tree->find(21)<<", ";
-    cout<<tree->find(2)<<", ";
-    cout<<tree->find(11)<<", ";
-    cout<<tree->find(8)<<", "; //cant find
-    cout<<tree->find(64)<<", ";
-    cout<<tree->find(5)<<", ";
-    cout<<tree->find(23)<<", ";
-    cout<<tree->find(85)<<endl;
+    cout<<"\nInsert 23\n";
+    tree->printKeys();
+    tree->printLeaves();
+    // cout<<tree->find(21)<<", ";
+    // cout<<tree->find(2)<<", ";
+    // cout<<tree->find(11)<<", ";
+    // cout<<tree->find(8)<<", ";
+    // cout<<tree->find(64)<<", ";
+    // cout<<tree->find(5)<<", ";
+    // cout<<tree->find(23)<<", ";
+    // cout<<tree->find(85)<<endl;
     tree->insert(6, "six");
-    // cout<<"\nInsert 6\n";
-    // tree->printKeys();
-    // tree->printLeaves(); 
-    cout<<tree->find(21)<<", ";
-    cout<<tree->find(2)<<", ";
-    cout<<tree->find(11)<<", "; //cant find
-    cout<<tree->find(8)<<", ";
-    cout<<tree->find(64)<<", "; //cant find
-    cout<<tree->find(5)<<", ";
-    cout<<tree->find(23)<<", ";
-    cout<<tree->find(6)<<", "; //cant find
-    cout<<tree->find(85)<<endl;
+    cout<<"\nInsert 6\n";
+    tree->printKeys();
+    tree->printLeaves(); 
+    // cout<<tree->find(21)<<", ";
+    // cout<<tree->find(2)<<", ";
+    // cout<<tree->find(11)<<", "; 
+    // cout<<tree->find(8)<<", ";
+    // cout<<tree->find(64)<<", "; 
+    // cout<<tree->find(5)<<", ";
+    // cout<<tree->find(23)<<", ";
+    // cout<<tree->find(6)<<", "; 
+    // cout<<tree->find(85)<<endl;
     tree->insert(19, "19");
-    // cout<<"\nInsert 19\n";
-    // tree->printKeys();
-    // tree->printLeaves();
-    cout<<tree->find(21)<<", "; //cant find
-    cout<<tree->find(2)<<", ";
-    cout<<tree->find(11)<<", "; //cant find
-    cout<<tree->find(8)<<", ";
-    cout<<tree->find(64)<<", "; //cant find
-    cout<<tree->find(5)<<", ";
-    cout<<tree->find(23)<<", "; //cant find
-    cout<<tree->find(6)<<", "; 
-    cout<<tree->find(19)<<", "; //cant find
-    cout<<tree->find(85)<<endl;
+    cout<<"\nInsert 19\n";
+    tree->printKeys();
+    tree->printLeaves();
+    // cout<<tree->find(21)<<", "; //cant find
+    // cout<<tree->find(2)<<", ";
+    // cout<<tree->find(11)<<", "; //cant find
+    // cout<<tree->find(8)<<", ";
+    // cout<<tree->find(64)<<", ";
+    // cout<<tree->find(5)<<", ";
+    // cout<<tree->find(23)<<", "; //cant find
+    // cout<<tree->find(6)<<", "; 
+    // cout<<tree->find(19)<<", "; //cant find
+    // cout<<tree->find(85)<<endl;
     tree->insert(9, "9");
-    // cout<<"\nInsert 9\n";
-    // tree->printKeys();
-    // tree->printLeaves();
-    cout<<tree->find(21)<<", "; //cant find
-    cout<<tree->find(2)<<", ";
-    cout<<tree->find(11)<<", "; //cant find
-    cout<<tree->find(8)<<", ";
-    cout<<tree->find(64)<<", "; //cant find
-    cout<<tree->find(5)<<", ";
-    cout<<tree->find(23)<<", "; //cant find
-    cout<<tree->find(6)<<", "; //cant find
-    cout<<tree->find(19)<<", ";
-    cout<<tree->find(9)<<", ";
-    cout<<tree->find(85)<<endl;
+    cout<<"\nInsert 9\n";
+    tree->printKeys();
+    tree->printLeaves();
+    // cout<<tree->find(21)<<", "; //cant find
+    // cout<<tree->find(2)<<", ";
+    // cout<<tree->find(11)<<", "; //cant find
+    // cout<<tree->find(8)<<", ";
+    // cout<<tree->find(64)<<", ";
+    // cout<<tree->find(5)<<", ";
+    // cout<<tree->find(23)<<", "; //cant find
+    // cout<<tree->find(6)<<", ";
+    // cout<<tree->find(19)<<", "; //cant find
+    // cout<<tree->find(9)<<", ";
+    // cout<<tree->find(85)<<endl;
     tree->insert(7, "7");
-    // cout<<"\nInsert 7\n";
-    // tree->printKeys();
-    // tree->printLeaves();
-    cout<<tree->find(21)<<", "; //cant find
-    cout<<tree->find(2)<<", ";
-    cout<<tree->find(11)<<", "; //cant find
-    cout<<tree->find(8)<<", ";
-    cout<<tree->find(64)<<", "; //cant find
-    cout<<tree->find(5)<<", ";
-    cout<<tree->find(23)<<", "; //cant find
-    cout<<tree->find(6)<<", "; //cant find
-    cout<<tree->find(19)<<", ";
-    cout<<tree->find(9)<<", ";
-    cout<<tree->find(7)<<", ";
-    cout<<tree->find(85)<<endl;
+    cout<<"\nInsert 7\n";
+    tree->printKeys();
+    tree->printLeaves();
+    // cout<<tree->find(21)<<", "; //cant find
+    // cout<<tree->find(2)<<", ";
+    // cout<<tree->find(11)<<", "; //cant find
+    // cout<<tree->find(8)<<", ";
+    // cout<<tree->find(64)<<", ";
+    // cout<<tree->find(5)<<", ";
+    // cout<<tree->find(23)<<", "; //cant find
+    // cout<<tree->find(6)<<", "; 
+    // cout<<tree->find(19)<<", "; //cant find
+    // cout<<tree->find(9)<<", ";
+    // cout<<tree->find(7)<<", ";
+    // cout<<tree->find(85)<<endl;
 }
 
