@@ -180,6 +180,53 @@ bool BPlusTree::insert(int key, string value){
     return true;
 }  
 
+void BPlusTree::redistribute(Node* victim, Node* receiver){
+
+}
+
+void BPlusTree::coalesce(Node* victim, Node* receiver){
+
+}
+
+bool BPlusTree::remove(int key){
+    //Find the associated leaf node
+    Node* leaf = findNode(key);
+
+    if(leaf == nullptr){
+        return false;
+    }
+
+    //Remove the assocaited entry
+    leaf->keyValues.erase(key);
+
+    //If the node is less than half full
+    if(leaf->keyValues.size() < floor((maxNumPointers-1)/2)){
+        //Check if redistribution is possible
+        Node* parent = leaf->parent;
+
+        //If there are no siblings
+        if(parent->children.size() == 1){
+            //Do something
+        }
+        //Otherwise,
+        else{
+            Node* leftSibling = nullptr;
+            Node* rightSibling = nullptr;
+            int counter = 0;
+            //Find the left and right siblings
+            for(vector<Node*>::iterator it = parent->children.begin(); it != parent->children.end(); it++){
+                if((*it)->nextLeaf == leaf){
+                    leftSibling = *it;
+                }
+                if((*it) == leaf && counter < parent->children.size()-1){
+                    rightSibling = *it;
+                }
+                counter++;
+            }
+        }
+    }
+}
+
 void BPlusTree::printLeaves(){
     Node* currNode = root;
     while(!currNode->isLeaf){
