@@ -24,6 +24,8 @@ bool BPlusTree::Node::isFull() const{
     return keyValues.size() >= tree->maxNumPointers-1;
 }
 
+BPlusTree::Node::~Node(){}  //Data is redirected outside of the class, not deleted
+
 /*----------------------------------------BPlusTree-------------------------------------*/
 BPlusTree::BPlusTree(int maxNumPointers) : maxNumPointers(maxNumPointers){};
 
@@ -294,7 +296,11 @@ void BPlusTree::coalesce(Node* victim, Node* receiver, bool victimLeftOfReceiver
     }  
     int keyAssociatedWithVictim = findAssociatedKeyOfNodeInParent(victim);
     removeFromNode(receiver->parent, keyAssociatedWithVictim, victim);
+    
     //Delete the victim
+    auto it = std::find(this->allNodes.begin(), this->allNodes.end(), victim);
+    this->allNodes.erase(it);
+    delete victim;
 }
 
 void BPlusTree::removeFromNode(Node* node, int key, Node* pointer){

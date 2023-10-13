@@ -23,6 +23,9 @@ class BPlusTree {
                 bool isOverflow() const;        //Checks if the Node is past full
                 bool isFull() const;        //Checks if the Node is full
                 friend class BPlusTree;
+
+                //Destructor
+                ~Node();
         };
     private:
         Node* root;
@@ -52,4 +55,7 @@ class BPlusTree {
         int findIndexOfNodeInParent(Node* child);
         int findAssociatedKeyOfNodeInParent(Node* child);
         Node* findLeafToLeftOfNode(Node* node);
+
+        //Destructor
+        ~BPlusTree();
 };
