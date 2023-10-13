@@ -188,6 +188,10 @@ void BPlusTree::coalesce(Node* victim, Node* receiver){
 
 }
 
+void BPlusTree::removeFromNode(Node* node, int key, Node* pointer){
+    
+}
+
 bool BPlusTree::remove(int key){
     //Find the associated leaf node
     Node* leaf = findNode(key);
@@ -196,40 +200,8 @@ bool BPlusTree::remove(int key){
         return false;
     }
 
-    //Remove the assocaited entry
-    leaf->keyValues.erase(key);
-
-    //If the node is less than half full
-    if(leaf->keyValues.size() < floor((maxNumPointers-1)/2)){
-        //Check if redistribution is possible
-        Node* parent = leaf->parent;
-
-        //If there are no siblings
-        if(parent->children.size() == 1){
-            //Do something
-        }
-        //Otherwise,
-        else{
-            Node* leftSibling = nullptr;
-            Node* rightSibling = nullptr;
-            int counter = 0;
-            //Find the left and right siblings
-            for(vector<Node*>::iterator it = parent->children.begin(); it != parent->children.end(); it++){
-                if((*it)->nextLeaf == leaf){
-                    leftSibling = *it;
-                }
-                if((*it) == leaf && counter < parent->children.size()-1){
-                    rightSibling = (*it)->nextLeaf;
-                }
-                counter++;
-            }
-
-            //If the left sibling is more than half full
-            if(leftSibling != nullptr && leftSibling->keyValues.size() > floor((maxNumPointers-1)/2)){
-                //Give one of leftSibling's keys to the leaf
-                redistribute(leftSibling, leaf);
-            }
-        }
+    else{
+        removeFromNode(leaf, key, nullptr);
     }
 }
 
