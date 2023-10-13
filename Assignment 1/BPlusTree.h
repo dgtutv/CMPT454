@@ -51,4 +51,5 @@ class BPlusTree {
         void removeFromNode(Node* node, int key, Node* pointer);        //Pointer is null if removing from a leaf
         int findIndexOfNodeInParent(Node* child);
         int findAssociatedKeyOfNodeInParent(Node* child);
+        Node* findLeafToLeftOfNode(Node* node);
 };

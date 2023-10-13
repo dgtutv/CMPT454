@@ -253,8 +253,48 @@ void BPlusTree::redistribute(Node* victim, Node* receiver, bool victimLeftOfRece
     }
 }
 
-void BPlusTree::coalesce(Node* victim, Node* receiver, bool victimLeftOfReceiver){
+BPlusTree::Node* BPlusTree::findLeafToLeftOfNode(Node* node){
+    Node* currentNode = root;
+    while(!currentNode->isLeaf){
+        currentNode = *currentNode->children.begin();
+    }
+    while(currentNode->nextLeaf != nullptr){
+        if(currentNode->nextLeaf == node){
+            return currentNode;
+        }
+        currentNode = currentNode->nextLeaf;
+    }
+    return nullptr;
+}
 
+void BPlusTree::coalesce(Node* victim, Node* receiver, bool victimLeftOfReceiver){
+    if(victim->isLeaf){
+        for(auto it = victim->keyValues.begin(); it != victim->keyValues.end(); it++){
+            receiver->keyValues.insert(pair<int, string>(it->first, it->second));
+        }
+        if(victimLeftOfReceiver){
+            //If there is a leaf to the left of the victim
+            Node* leftLeaf = findLeafToLeftOfNode(victim);
+            if(leftLeaf != nullptr){
+                leftLeaf->nextLeaf = receiver;
+            }
+        }
+        else{
+            receiver->nextLeaf = victim->nextLeaf;
+        }
+    }
+    else{
+        int counter = 0;
+        for(auto it = victim->keyValues.begin(); it != victim->keyValues.end(); it++){
+            receiver->keyValues.insert(pair<int, string>(it->first, it->second));
+            receiver->children.push_back(victim->children[counter]);
+            counter++;
+        }
+        sort(receiver->children.begin(), receiver->children.end(), compareNodes);
+    }  
+    int keyAssociatedWithVictim = findAssociatedKeyOfNodeInParent(victim);
+    removeFromNode(receiver->parent, keyAssociatedWithVictim, victim);
+    //Delete the victim
 }
 
 void BPlusTree::removeFromNode(Node* node, int key, Node* pointer){
