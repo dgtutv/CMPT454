@@ -195,15 +195,31 @@ int BPlusTree::findIndexOfNodeInParent(Node* child){
     }
 }
 
+int BPlusTree::findAssociatedKeyOfNodeInParent(Node* child){
+    Node* parent = child->parent;
+    int index = findIndexOfNodeInParent(child);
+    int i=0;
+    for(auto it = parent->keyValues.begin(); it!=parent->keyValues.end(); it++){
+        if(i == index){
+            return(it->first);
+        }
+        i++;
+    }
+}
+
 void BPlusTree::redistribute(Node* victim, Node* receiver, bool victimLeftOfReceiver){
     vector<int> keysToRemove;
     vector<Node*> childrenToRemove;
     if(victimLeftOfReceiver){
         keysToRemove.push_back(victim->keyValues.rbegin()->first);
         receiver->keyValues.insert(pair<int, string>(victim->keyValues.rbegin()->first, victim->keyValues.rbegin()->second));
+
         //Replace the parent value corresponding to the reciever with the new first value in the receiver
-        int indexOfNodeInParent = findIndexOfNodeInParent(receiver);
-        //Remove 
+        int keyAssociatedWithReceiverInParent = findAssociatedKeyOfNodeInParent(receiver);  //Find the key associated with the receiver in the parent
+        Node* parent = receiver->parent;
+        parent->keyValues.erase(keyAssociatedWithReceiverInParent);  //Remove the key associated with the receiver in the parent
+        parent->keyValues.insert(pair<int, string>(receiver->keyValues.begin()->first, receiver->keyValues.begin()->second));       //Add the fisrt key in the receiver to the parent
+        
         if(!receiver->isLeaf){
             childrenToRemove.push_back(*victim->children.rbegin());
             receiver->children.push_back(*victim->children.rbegin());
@@ -214,7 +230,13 @@ void BPlusTree::redistribute(Node* victim, Node* receiver, bool victimLeftOfRece
     else{
         keysToRemove.push_back(victim->keyValues.begin()->first);
         receiver->keyValues.insert(pair<int, string>(victim->keyValues.begin()->first, victim->keyValues.begin()->second));
+
         //Replace the parent value corresponding to the victim with the new value in the parent
+        int keyAssociatedWithVictimInParent = findAssociatedKeyOfNodeInParent(victim);  //Find the key associated with the victim in the parent
+        Node* parent = victim->parent;
+        parent->keyValues.erase(keyAssociatedWithVictimInParent);  //Remove the key associated with the victim in the parent
+        parent->keyValues.insert(pair<int, string>(victim->keyValues.begin()->first, victim->keyValues.begin()->second));       //Add the fisrt key in the victim to the parent
+
         if(!receiver->isLeaf){
             childrenToRemove.push_back(*victim->children.begin());
             receiver->children.push_back(*victim->children.begin());
