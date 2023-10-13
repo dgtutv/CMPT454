@@ -460,10 +460,10 @@ int main(int argc, char const *argv[]){
     tree->insert(45, "fourty five");    
     cout<<"\nInsert 45\n";
     tree->printKeys();
-    tree->insert(51, "fifty one");  //Works up to here
+    tree->insert(51, "fifty one");
     cout<<"\nInsert 51\n";
     tree->printKeys();
-    tree->insert(60, "sixty");
+    tree->insert(60, "sixty");  
     cout<<"\nInsert 60\n";
     tree->printKeys();
     tree->insert(97, "ninety seven");
