@@ -295,11 +295,11 @@ void BPlusTree::removeFromNode(Node* node, int key, Node* pointer){
         }
         //Otherwise, if the left sibling exists, but is exactly half full, coalesce with the left sibling
         else if(leftSibling != nullptr){
-            coalesce(node, leftSibling);
+            coalesce(node, leftSibling, false);
         }
         //Otherwise, coalesce with the right sibling
         else{
-            coalesce(node, rightSibling);
+            coalesce(node, rightSibling, true);
         }
     }
 }
