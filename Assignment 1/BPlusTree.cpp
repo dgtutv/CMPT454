@@ -185,7 +185,37 @@ bool BPlusTree::insert(int key, string value){
 }  
 
 void BPlusTree::redistribute(Node* victim, Node* receiver, bool victimLeftOfReceiver){
-
+    vector<int> keysToRemove;
+    vector<Node*> childrenToRemove;
+    if(victimLeftOfReceiver){
+        keysToRemove.push_back(victim->keyValues.rbegin()->first);
+        receiver->keyValues.insert(pair<int, string>(victim->keyValues.rbegin()->first, victim->keyValues.rbegin()->second));
+        //Replace the parent value corresponding to the reciever with the new value in the parent
+        if(!receiver->isLeaf){
+            childrenToRemove.push_back(*victim->children.rbegin());
+            receiver->children.push_back(*victim->children.rbegin());
+            sort(receiver->children.begin(), receiver->children.end(), compareNodes);
+            sort(victim->children.begin(), victim->children.end(), compareNodes);
+        }
+    }
+    else{
+        keysToRemove.push_back(victim->keyValues.begin()->first);
+        receiver->keyValues.insert(pair<int, string>(victim->keyValues.begin()->first, victim->keyValues.begin()->second));
+        //Replace the parent value corresponding to the reciever with the new value in the parent
+        if(!receiver->isLeaf){
+            childrenToRemove.push_back(*victim->children.begin());
+            receiver->children.push_back(*victim->children.begin());
+            sort(receiver->children.begin(), receiver->children.end(), compareNodes);
+            sort(victim->children.begin(), victim->children.end(), compareNodes);
+        }
+    }
+    for(int i=0; i<keysToRemove.size(); i++){
+        victim->keyValues.erase(keysToRemove[i]);
+    }
+    for(int i=0; i<childrenToRemove.size(); i++){
+        auto it = std::find(victim->children.begin(), victim->children.end(), childrenToRemove[i]);
+        victim->children.erase(it);
+    }
 }
 
 void BPlusTree::coalesce(Node* victim, Node* receiver){
