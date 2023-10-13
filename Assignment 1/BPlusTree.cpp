@@ -449,23 +449,12 @@ int main(int argc, char const *argv[]){
     tree->insert(19, "nineteen");
     tree->insert(9, "nine");
     tree->insert(7, "seven");   
-    cout<<"\nInsert 7\n";
-    tree->printKeys();
-    tree->insert(31, "thirty one");   
-    cout<<"\nInsert 31\n";
-    tree->printKeys();
+
+    tree->insert(31, "thirty one");  
+    tree->insert(45, "fourty five"); 
     tree->insert(39, "thirty nine");    
-    cout<<"\nInsert 39\n";
-    tree->printKeys();
-    tree->insert(45, "fourty five");    
-    cout<<"\nInsert 45\n";
-    tree->printKeys();
+    tree->insert(60, "sixty");   
     tree->insert(51, "fifty one");
-    cout<<"\nInsert 51\n";
-    tree->printKeys();
-    tree->insert(60, "sixty");  
-    cout<<"\nInsert 60\n";
-    tree->printKeys();
     tree->insert(97, "ninety seven");
     cout<<"\nInsert more values\n";
     tree->printKeys();
