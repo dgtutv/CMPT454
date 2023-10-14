@@ -54,3 +54,28 @@ void BPlusTree::recursiveDelete(Node* node){
 BPlusTree::~BPlusTree(){
     recursiveDelete(root);
 }
+
+//Returs the leaf node the key is already in, or the leaf node of where the key should be inserted
+Node* BPlusTree::findLeaf(int key){
+    Node* currentNode = root;
+    int currentKey;
+    while(!currentNode->isLeaf){
+        for(int i=0; i<currentNode->size; i++){
+            currentKey = currentNode->keys[i];
+            if(key < currentKey){
+                currentNode = currentNode->children[i];
+            }
+            else if(key > currentKey && i!=currentNode->size-1){
+                continue;
+            }
+            else{
+                currentNode=currentNode->children[i+1];
+            }
+        }
+    }
+    return(currentNode);
+}
+
+bool BPlusTree::insert(int key, string value){
+
+}

@@ -1,4 +1,5 @@
 #include <string>
+#include <map>
 using namespace std;
 
 class Node{
@@ -33,6 +34,7 @@ class BPlusTree{
         void printValues();
 
         //Helper methods
+        Node* findLeaf(int key);
         Node* copyNode(Node* nodeToCopy);
         void recursiveDelete(Node* node);
         bool insertInLeaf(Node* leftNode, int key, string value);
