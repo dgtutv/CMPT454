@@ -13,8 +13,8 @@ class BPlusTree {
                 Node* nextLeaf;     //Is null if the node is not a leaf itself
             public:
                 //Public data
-                map<int, string> keyValues;     //Here I use a map to store key/value pairs
-                vector<Node*> children;       //Will be empty if the Node is a leafNode
+                void* firstChild;       //Only applicable if the node is not a leaf
+                map<int, void*> keyPointers;     //Here I use a map to store key/pointer pairs, pointers will be values if node is a leaf
 
                 //Constructor
                 Node(Node* parent, bool isLeaf, BPlusTree* tree);    
@@ -53,12 +53,10 @@ class BPlusTree {
         Node* findNode(int key);        //Finds the leaf node that should contain a given key
         void redistribute(Node* victim, Node* receiver, bool victimLeftOfReceiver);    //Redistributes a value (and a pointer if interior) from the victim to the reciever
         void coalesce(Node* victim, Node* receiver, bool victimLeftOfReceiver);        //Coalesces victim into receiver
-        void removeFromNode(Node* node, int key, Node* pointer);        //Pointer is null if removing from a leaf
+        void removeFromNode(Node* node, int key);        //Also removes a pointer if the node is not a leaf
         int findIndexOfNodeInParent(Node* child);
         int findAssociatedKeyOfNodeInParent(Node* child);
         Node* findLeafToLeftOfNode(Node* node);
-        void updateParentPointers(Node* parent);        //Iterates over the entire tree and updates the parent pointers for all nodes, pass in the root
-        void fixPointers();         //Ensures that the tree is properly linked in terms of children and parents
 
         //Destructor
         ~BPlusTree();
