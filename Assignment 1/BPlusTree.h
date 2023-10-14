@@ -13,7 +13,7 @@ class BPlusTree {
                 Node* nextLeaf;     //Is null if the node is not a leaf itself
             public:
                 //Public data
-                void* firstChild;       //Only applicable if the node is not a leaf
+                Node* firstChild;       //Only applicable if the node is not a leaf
                 map<int, void*> keyPointers;     //Here I use a map to store key/pointer pairs, pointers will be values if node is a leaf
 
                 //Constructor

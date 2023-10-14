@@ -24,6 +24,15 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
 }
 
 BPlusTree::Node* BPlusTree::findNode(int key){
+    Node* currentNode = root;
+
+    while(!currentNode->isLeaf){
+        //If the key is less than the first key in the current node
+        if(key < currentNode->keyPointers.begin()->first){
+            //See the first child
+            currentNode = currentNode->firstChild;
+        }
+    }
 }
 
 string BPlusTree::find(int key){
