@@ -40,3 +40,17 @@ BPlusTree& BPlusTree::operator=(BPlusTree& treeToCopy){
     }
     return *this;
 }
+
+void BPlusTree::recursiveDelete(Node* node){
+    if(!node->isLeaf){
+        for(int i=0; i<node->size+1; i++){
+            recursiveDelete(node->children[i]);
+        }
+    }
+    delete node;
+
+}
+
+BPlusTree::~BPlusTree(){
+    recursiveDelete(root);
+}
