@@ -5,11 +5,23 @@
 #include <queue>
 using namespace std;
 
+/*------------------------------Compare function for nodes-------------------------------*/
+bool compareNodes(const BPlusTree::Node* a, const BPlusTree::Node* b){
+    if (!a->keyValues.empty() && !b->keyValues.empty()) {
+        return a->keyValues.begin()->first < b->keyValues.begin()->first;
+    }
+    return false;       //Return false if one or both of the nodes has no keys
+}
+
 /*------------------------------------------Node----------------------------------------*/
 BPlusTree::Node::Node(Node* parent, bool isLeaf, BPlusTree* tree) : parent(parent), isLeaf(isLeaf), tree(tree){};
 
+bool BPlusTree::Node::isOverflow() const{
+    return keyValues.size() > tree->maxNumPointers-1;
+}
+
 bool BPlusTree::Node::isFull() const{
-    return keyPointers.size() >= tree->maxNumPointers-1;
+    return keyValues.size() >= tree->maxNumPointers-1;
 }
 
 BPlusTree::Node::~Node(){}  //Data is redirected outside of the class, not deleted
@@ -17,57 +29,95 @@ BPlusTree::Node::~Node(){}  //Data is redirected outside of the class, not delet
 /*----------------------------------------BPlusTree-------------------------------------*/
 BPlusTree::BPlusTree(int maxNumPointers) : maxNumPointers(maxNumPointers){};
 
-void BPlusTree::splitNode(Node* leftNode, int key, void* pointer){
+void BPlusTree::updateParentPointers(Node* parent){
+    for(auto it=parent->children.begin(); it!=parent->children.end(); it++){
+        (*it)->parent = parent;
+        updateParentPointers(*it);
+    }
+}
+
+void BPlusTree::splitNode(Node* leftNode, int key, string value){
     //Create a sibling node
     Node* rightNode = new Node(leftNode->parent, leftNode->isLeaf, this);
     allNodes.push_back(rightNode);
-
-    //Insert the new key and pointer into the left node
-    leftNode->keyPointers.insert(pair<int, void*>(key, pointer));
-
-    //Balance the siblings
     int counter = 0;
     vector<int> keysToRemove;
-    for(auto it = leftNode->keyPointers.begin(); it != leftNode->keyPointers.end(); it++){
-        if(counter >= floor(maxNumPointers/2)){
-            rightNode->keyPointers.insert(pair<int, void*>(key, pointer));
-            keysToRemove.push_back(it->first);
+    vector<Node*> pointersToRemove;
+
+    //Insert the new key/value into the leftNode
+    leftNode->keyValues.insert(pair<int, string>(key, value));
+    
+    //Balance the siblings
+    sort(leftNode->children.begin(), leftNode->children.end(), compareNodes);
+    for(map<int, string>::iterator it = leftNode->keyValues.begin(); it != leftNode->keyValues.end(); it++){
+        if(counter >= floor(leftNode->keyValues.size()/2)){
+            rightNode->keyValues.insert(pair<int, string>(it->first, it->second));
+            keysToRemove.push_back(it->first);    
+        }
+        if(!leftNode->isLeaf && counter > floor(leftNode->keyValues.size()/2)){
+            rightNode->children.push_back(leftNode->children[counter]);
+            pointersToRemove.push_back(leftNode->children[counter]);
         }
         counter++;
     }
 
-    //Remove extraneous data from the left node
+    //Remove extraneous data from the leftNode
     for(int i=0; i<keysToRemove.size(); i++){
-        leftNode->keyPointers.erase(keysToRemove[i]);
+        leftNode->keyValues.erase(keysToRemove[i]);
+        if(!leftNode->isLeaf){
+            vector<Node*>::iterator it = std::find(leftNode->children.begin(), leftNode->children.end(), pointersToRemove[i]);
+            leftNode->children.erase(it);
+        }
     }
+    sort(leftNode->children.begin(), leftNode->children.end(), compareNodes);
+    sort(rightNode->children.begin(), rightNode->children.end(), compareNodes);
 
-    //If a parent does not exist, make one
+    
+    //Give the first counter of the right container back to the left one
+      
+
+    //If a parent does not exist, make an empty one
     if(leftNode == root){
         Node* newParent = new Node(nullptr, false, this);
         allNodes.push_back(newParent);
         leftNode->parent = newParent;
-        newParent->firstChild = leftNode;
+        rightNode->parent = newParent;
+        newParent->children.push_back(leftNode);
         root = newParent;
-        leftNode->parent->keyPointers.insert(pair<int, void*>(rightNode->keyPointers.begin()->first, (void*)rightNode));
+    }
+
+    //Update leftNode and rightNode's isLeaf booleans
+    if(leftNode->children.size() == 0){
+        leftNode->isLeaf = true;
+        rightNode->isLeaf = true;
+        if(leftNode->nextLeaf != nullptr){
+            rightNode->nextLeaf = leftNode->nextLeaf;
+        }
+        leftNode->nextLeaf = rightNode;
     }
 
     //If there is a parent, but it is full, recursively call splitNode on the parent
-    else if(leftNode->parent->isFull()){
-        splitNode(leftNode->parent, rightNode->keyPointers.begin()->first, rightNode);
+    if(leftNode->parent->isFull()){
+        splitNode(leftNode->parent, rightNode->keyValues.begin()->first, rightNode->keyValues.begin()->second);
+        sort(leftNode->parent->children.begin(), leftNode->parent->children.end(), compareNodes);
     }
 
-    //Otherwise, insert rightNode's first key, and a pointer to rightNode into the parent
+    //Insert rightNode's first key into the parent
     else{
-        leftNode->parent->keyPointers.insert(pair<int, void*>(rightNode->keyPointers.begin()->first, (void*)rightNode));
+        leftNode->parent->keyValues.insert(pair<int, string>(rightNode->keyValues.begin()->first, rightNode->keyValues.begin()->second));
+    }
+    //Override pointers adjacent to the newly inserted key to point at the leftNode and the rightNode
+    leftNode->parent->children.push_back(rightNode);
+    sort(leftNode->parent->children.begin(), leftNode->parent->children.end(), compareNodes);
+
+    //If the rightNode is not a leaf, and it has more than one key, remove rightNode's first value
+    if(!(rightNode->isLeaf) && (rightNode->keyValues.size() > 1)){
+        rightNode->keyValues.erase(rightNode->keyValues.begin()->first);
     }
 
-    //Set rightNode's (the new sibling's) parent
-    rightNode->parent = leftNode->parent;
+    //Update all of the parent pointers in the tree
+    updateParentPointers(root);
 
-    //If rightNode is not a leaf, and it has more than one key, remove rightNode's first keyPointer pair
-    if(!(rightNode->isLeaf) && (rightNode->keyPointers.size() > 1)){
-        rightNode->keyPointers.erase(rightNode->keyPointers.begin()->first);
-    }
 }
 
 BPlusTree::Node* BPlusTree::findNode(int key){
@@ -75,69 +125,66 @@ BPlusTree::Node* BPlusTree::findNode(int key){
 
     while(!currentNode->isLeaf){
         //If the key is less than the first key in the current node
-        if(key < currentNode->keyPointers.begin()->first){
+        if(key < currentNode->keyValues.begin()->first){
             //See the first child
-            currentNode = currentNode->firstChild;
+            currentNode = *currentNode->children.begin();
+            continue;
         }
 
         //If the key is greater than or equal to the largest key in the current node
-        else if(key >= currentNode->keyPointers.rbegin()->first){
+        else if(key >= currentNode->keyValues.rbegin()->first){
             //See the last child
-            currentNode = (Node*)currentNode->keyPointers.rbegin()->second;
+            currentNode = *currentNode->children.rbegin();
+            continue;
         }
 
         //Otherwise, find the corresponding child with the correct key
-        else{
-            //Catch a bad call
-            if(currentNode->keyPointers.size() < 2){
-                return nullptr;
-            }
+        if(currentNode->keyValues.size()<2){
+            return nullptr;
+        }
 
-            //Iterate over our keyPointers map
-            int currKey;
-            for(auto it = next(currentNode->keyPointers.begin()); it != currentNode->keyPointers.end(); it++){
-                currKey = it->first;
-                //If we find our key to be less than the current key, go to the previous child
-                if(key<currKey){
-                    currentNode = (Node*)(prev(it)->second);
-                    break;
-                }
-                //If we find our key to be the same as the current key, go to the current child
-                else if(key == currKey){
-                    currentNode = (Node*)(it->second);
-                    break;
-                }
+        //Iterate over our keyValues map 
+        int currKey;
+        int i=0;
+        for(map<int, string>::iterator it=currentNode->keyValues.begin(); it != currentNode->keyValues.end(); ++it){
+            currKey = it->first;
+            //If we find our key to be less than the current key, go to the ith child
+            if(key<currKey){
+                currentNode = currentNode->children[i];
+                break;
             }
+            //If we find our key to be the same as the current key, go to the i+1th child
+            else if(key==currKey){
+                currentNode = currentNode->children[i+1];
+                break;
+            }
+            ++i;
         }
     }
     return currentNode;
 }
 
 string BPlusTree::find(int key){
-    //Find the leaf that the key is in
+    //Find the node that the key is in
     Node* node = findNode(key);
 
-    //If the key was not found, return an empty string
+    //If the key was not found, return null
     if(node == nullptr){
         return "";
     }
-
-    //Otherwise, return the value corresponding with the key in leaf
-    return *(string*)node->keyPointers.find(key)->second;
+    //Otherwise, return the value corresponding with the key in the node
+    return node->keyValues.find(key)->second;
 }
 
 bool BPlusTree::insert(int key, string value){
-
-    //If the root does not exist, enter the key/value into it 
-    if(root == nullptr){
+    //If the root does not exist, enter the value into it
+    if(root == nullptr){   
         root = new Node(nullptr, true, this);
         allNodes.push_back(root);
-        pair<int, void*> keyValue = pair<int, void*>(key, (void*)&value);
-        root->keyPointers.insert(keyValue);
+        root->keyValues.insert(pair<int, string>(key, value));
     }
 
     //Check if the key is already present
-    string test = find(key);
     if(find(key).size() != 0){
         return false;
     }
@@ -145,36 +192,235 @@ bool BPlusTree::insert(int key, string value){
     //Otherwise, find where to insert our pair
     else{
         Node* insertionNode = findNode(key);
-        if(insertionNode->isFull()){
-            splitNode(insertionNode, key, (void*)&value);
+        if(insertionNode->isFull() || insertionNode->isOverflow()){
+            splitNode(insertionNode, key, value);
         }
         else{
-            pair<int, void*> keyValue = pair<int, void*>(key, (void*)&value);
-            insertionNode->keyPointers.insert(keyValue);
+            insertionNode->keyValues.insert(pair<int, string>(key, value));
         }
     }
     return true;
 }  
 
 int BPlusTree::findIndexOfNodeInParent(Node* child){
+    Node* parent = child->parent;
+    int i=0;
+    for(auto it = parent->children.begin(); it != parent->children.end(); it++){
+        if(*it == child){
+            return i;
+        }
+        i++;
+    }
 }
 
 int BPlusTree::findAssociatedKeyOfNodeInParent(Node* child){
+    Node* parent = child->parent;
+    int index = findIndexOfNodeInParent(child);
+    int i=0;
+    for(auto it = parent->keyValues.begin(); it!=parent->keyValues.end(); it++){
+        if(i == index){
+            return(it->first);
+        }
+        i++;
+    }
 }
 
 void BPlusTree::redistribute(Node* victim, Node* receiver, bool victimLeftOfReceiver){
+    vector<int> keysToRemove;
+    vector<Node*> childrenToRemove;
+    if(victimLeftOfReceiver){
+        keysToRemove.push_back(victim->keyValues.rbegin()->first);
+        receiver->keyValues.insert(pair<int, string>(victim->keyValues.rbegin()->first, victim->keyValues.rbegin()->second));
+
+        //Replace the parent value corresponding to the reciever with the new first value in the receiver
+        int keyAssociatedWithReceiverInParent = findAssociatedKeyOfNodeInParent(receiver);  //Find the key associated with the receiver in the parent
+        Node* parent = receiver->parent;
+        parent->keyValues.erase(keyAssociatedWithReceiverInParent);  //Remove the key associated with the receiver in the parent
+        parent->keyValues.insert(pair<int, string>(receiver->keyValues.begin()->first, receiver->keyValues.begin()->second));       //Add the fisrt key in the receiver to the parent
+        
+        if(!receiver->isLeaf){
+            childrenToRemove.push_back(*victim->children.rbegin());
+            receiver->children.push_back(*victim->children.rbegin());
+            sort(receiver->children.begin(), receiver->children.end(), compareNodes);
+            sort(victim->children.begin(), victim->children.end(), compareNodes);
+        }
+    }
+    else{
+        keysToRemove.push_back(victim->keyValues.begin()->first);
+        receiver->keyValues.insert(pair<int, string>(victim->keyValues.begin()->first, victim->keyValues.begin()->second));
+
+        //Replace the parent value corresponding to the victim with the new value in the parent
+        int keyAssociatedWithVictimInParent = findAssociatedKeyOfNodeInParent(victim);  //Find the key associated with the victim in the parent
+        Node* parent = victim->parent;
+        parent->keyValues.erase(keyAssociatedWithVictimInParent);  //Remove the key associated with the victim in the parent
+        parent->keyValues.insert(pair<int, string>(victim->keyValues.begin()->first, victim->keyValues.begin()->second));       //Add the fisrt key in the victim to the parent
+
+        if(!receiver->isLeaf){
+            childrenToRemove.push_back(*victim->children.begin());
+            receiver->children.push_back(*victim->children.begin());
+            sort(receiver->children.begin(), receiver->children.end(), compareNodes);
+            sort(victim->children.begin(), victim->children.end(), compareNodes);
+        }
+    }
+    for(int i=0; i<keysToRemove.size(); i++){
+        victim->keyValues.erase(keysToRemove[i]);
+    }
+    for(int i=0; i<childrenToRemove.size(); i++){
+        auto it = std::find(victim->children.begin(), victim->children.end(), childrenToRemove[i]);
+        victim->children.erase(it);
+    }
 }
 
 BPlusTree::Node* BPlusTree::findLeafToLeftOfNode(Node* node){
+    Node* currentNode = root;
+    while(!currentNode->isLeaf){
+        currentNode = *currentNode->children.begin();
+    }
+    while(currentNode->nextLeaf != nullptr){
+        if(currentNode->nextLeaf == node){
+            return currentNode;
+        }
+        currentNode = currentNode->nextLeaf;
+    }
+    return nullptr;
 }
 
 void BPlusTree::coalesce(Node* victim, Node* receiver, bool victimLeftOfReceiver){
+    if(victim->isLeaf){
+        for(auto it = victim->keyValues.begin(); it != victim->keyValues.end(); it++){
+            receiver->keyValues.insert(pair<int, string>(it->first, it->second));
+        }
+        if(victimLeftOfReceiver){
+            //If there is a leaf to the left of the victim
+            Node* leftLeaf = findLeafToLeftOfNode(victim);
+            if(leftLeaf != nullptr){
+                leftLeaf->nextLeaf = receiver;
+            }
+        }
+        else{
+            receiver->nextLeaf = victim->nextLeaf;
+        }
+    }
+    else{
+        int counter = 0;
+        for(auto it = victim->keyValues.begin(); it != victim->keyValues.end(); it++){
+            receiver->keyValues.insert(pair<int, string>(it->first, it->second));
+            receiver->children.push_back(victim->children[counter]);
+            counter++;
+        }
+        sort(receiver->children.begin(), receiver->children.end(), compareNodes);
+    }  
+    int keyAssociatedWithVictim = findAssociatedKeyOfNodeInParent(victim);
+    removeFromNode(receiver->parent, keyAssociatedWithVictim, victim);
+
+    //Delete the victim
+    auto it = std::find(this->allNodes.begin(), this->allNodes.end(), victim);
+    this->allNodes.erase(it);
+    delete victim;
 }
 
-void BPlusTree::removeFromNode(Node* node, int key){
+void BPlusTree::removeFromNode(Node* node, int key, Node* pointer){
+    //Erase the pair from the node
+    node->keyValues.erase(key);
+
+    //If the node is interior, remove the given pointer
+    if(!node->isLeaf){
+        vector<Node*>::iterator it = std::find(node->children.begin(), node->children.end(), pointer);
+        node->children.erase(it);
+        sort(node->children.begin(), node->children.end(), compareNodes);
+    }
+
+    //If the node is less than half full
+    cout<<node->keyValues.size()<<endl;
+    if(node->keyValues.size() <= floor((maxNumPointers-1)/2)){
+        //Find left and right siblings
+        Node* leftSibling = nullptr;
+        Node* rightSibling = nullptr;
+        Node* parent = node->parent;
+        for(auto it = parent->children.begin(); it != parent->children.end(); it++){
+            if((*it) == node){
+                if(it!=parent->children.begin()){
+                    leftSibling = *prev(it);
+                }
+                if(it!=parent->children.end()-1){
+                    rightSibling = *next(it);
+                }
+                break;
+            }
+        }
+        //If the left sibling exists and is more than half full, redistribute from the left sibling
+        if(leftSibling != nullptr && leftSibling->keyValues.size() >= floor((maxNumPointers-1)/2)){
+            redistribute(leftSibling, node, true);
+        }
+        //Otherwise, if the right sibling exists and is more than half full, redistribute from the right sibling
+        else if(rightSibling != nullptr && rightSibling->keyValues.size() >= floor((maxNumPointers-1)/2)){
+            redistribute(rightSibling, node, false);
+        }
+        //Otherwise, if the left sibling exists, but is exactly half full, coalesce with the left sibling
+        else if(leftSibling != nullptr){
+            coalesce(node, leftSibling, false);
+        }
+        //Otherwise, coalesce with the right sibling
+        else{
+            coalesce(node, rightSibling, true);
+        }
+    }
 }
 
 bool BPlusTree::remove(int key){
+    //Find the associated leaf node
+    Node* leaf = findNode(key);
+    bool keyIsInNode = false;
+    while(!keyIsInNode){
+        for(auto it=leaf->keyValues.begin(); it!=leaf->keyValues.end(); it++){
+            if(it->first == key){
+                keyIsInNode = true;
+            }
+        }
+        if(!keyIsInNode){
+            leaf=leaf->nextLeaf;
+        }
+        if(leaf==nullptr){
+            Node* currentNode = root;
+            while(!currentNode->isLeaf){
+                currentNode=currentNode->children[0];
+            }
+        }
+    }
+    
+
+    if(leaf != nullptr){
+        removeFromNode(leaf, key, nullptr);
+        return true;
+    }
+    return false;
+}
+
+void BPlusTree::printLeaves(){
+    Node* currNode = root;
+    while(!currNode->isLeaf){
+        currNode = *currNode->children.begin();
+    }
+    while(true){
+        cout<<"{";
+        int counter = 0;
+        for(auto it=currNode->keyValues.begin(); it != currNode->keyValues.end(); it++){
+            cout<<"("<<it->first<<", "<<it->second<<")";
+            if(counter != currNode->keyValues.size()-1){
+                cout<<", ";
+            }
+            counter++;
+        }
+        cout<<"}";
+        currNode = currNode->nextLeaf;
+        if(currNode == nullptr){
+            cout<<endl;
+            return;
+        }
+        else{
+            cout<<" -> ";
+        }
+    }
 }
 
 void BPlusTree::printKeys(){
@@ -187,27 +433,27 @@ void BPlusTree::printKeys(){
 
         //Print the current level
         for(int i=0; i<sizeOfCurrentLevel; i++){
-            Node* currentNode = nodesToPrint.front();
+            Node* currentNode =  nodesToPrint.front();
             nodesToPrint.pop();
             printNodeKey(currentNode);
 
-            //Add the children of the currentNode to the queue
-            if(!currentNode->isLeaf){
-                for(auto it = currentNode->keyPointers.begin(); it != currentNode->keyPointers.end(); it++){
-                    nodesToPrint.push((Node*)it->second);
+            //Add the children of the current node to the queue
+            if(!currentNode->children.empty()){
+                for(Node* child : currentNode->children){
+                    nodesToPrint.push(child);
                 }
             }
         }
-        cout<<endl<<endl; 
-    } 
-    cout<<"--------------------------------\n"; 
+        cout<<endl<<endl;
+    }
+    cout<<"--------------------------------\n";
 }
 
 void BPlusTree::printNodeKey(Node* node){
     cout<<"|";
-    for(auto it = node->keyPointers.begin(); it != node->keyPointers.end(); it++){
+    for(map<int, string>::iterator it = node->keyValues.begin(); it != node->keyValues.end(); it++){
         cout<<it->first;
-        if(next(it) != node->keyPointers.end()){
+        if(next(it) != node->keyValues.end()){
             cout<<" ";
         }
     }
@@ -238,6 +484,7 @@ int main(int argc, char const *argv[]){
 
     tree->printKeys();
 
-    // tree->remove(45);   //Taking from wrong child, not updating parent pointer, also parent pointer still broken, but worked around it
-    // tree->printKeys();
+    tree->remove(45);   //Taking from wrong child, not updating parent pointer, also parent pointer still broken, but worked around it
+    tree->printKeys();
 }
+//LOOP STARTING TOO EARLY
