@@ -5,10 +5,6 @@
 #include <queue>
 using namespace std;
 
-/*------------------------------Compare function for nodes-------------------------------*/
-bool compareNodes(const BPlusTree::Node* a, const BPlusTree::Node* b){
-}
-
 /*------------------------------------------Node----------------------------------------*/
 BPlusTree::Node::Node(Node* parent, bool isLeaf, BPlusTree* tree) : parent(parent), isLeaf(isLeaf), tree(tree){};
 
