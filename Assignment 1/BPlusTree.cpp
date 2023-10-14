@@ -32,7 +32,38 @@ BPlusTree::Node* BPlusTree::findNode(int key){
             //See the first child
             currentNode = currentNode->firstChild;
         }
+
+        //If the key is greater than or equal to the largest key in the current node
+        else if(key >= currentNode->keyPointers.rbegin()->first){
+            //See the last child
+            currentNode = (Node*)currentNode->keyPointers.rbegin()->second;
+        }
+
+        //Otherwise, find the corresponding child with the correct key
+        else{
+            //Catch a bad call
+            if(currentNode->keyPointers.size() < 2){
+                return nullptr;
+            }
+
+            //Iterate over our keyPointers map
+            int currKey;
+            for(auto it = next(currentNode->keyPointers.begin()); it != currentNode->keyPointers.end(); it++){
+                currKey = it->first;
+                //If we find our key to be less than the current key, go to the previous child
+                if(key<currKey){
+                    currentNode = (Node*)(prev(it)->second);
+                    break;
+                }
+                //If we find our key to be the same as the current key, go to the current child
+                else if(key == currKey){
+                    currentNode = (Node*)(it->second);
+                    break;
+                }
+            }
+        }
     }
+    return currentNode;
 }
 
 string BPlusTree::find(int key){
