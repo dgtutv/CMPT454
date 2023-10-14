@@ -457,31 +457,71 @@ void BPlusTree::printNodeKey(Node* node){
     cout<<"|";
 }
 
+void BPlusTree::printValues(){
+    queue<Node*> nodesToPrint;
+    nodesToPrint.push(root);
+
+    //Iterate over the nodesToPrint queue
+    while(!nodesToPrint.empty()){
+        int sizeOfCurrentLevel = nodesToPrint.size();
+
+        //Print the current level
+        for(int i=0; i<sizeOfCurrentLevel; i++){
+            Node* currentNode =  nodesToPrint.front();
+            nodesToPrint.pop();
+            printNodeValue(currentNode);
+
+            //Add the children of the current node to the queue
+            if(!currentNode->children.empty()){
+                for(Node* child : currentNode->children){
+                    nodesToPrint.push(child);
+                }
+            }
+        }
+        cout<<endl<<endl;
+    }
+    cout<<"--------------------------------\n";
+}
+
+void BPlusTree::printNodeValue(Node* node){
+    cout<<"|";
+    for(map<int, string>::iterator it = node->keyValues.begin(); it != node->keyValues.end(); it++){
+        cout<<it->second;
+        if(next(it) != node->keyValues.end()){
+            cout<<" ";
+        }
+    }
+    cout<<"|";
+}
+
 //Tester code
 int main(int argc, char const *argv[]){
-    BPlusTree* tree = new BPlusTree(4);
-    tree->insert(21, "twenty one");
-    tree->insert(2, "two");
-    tree->insert(11, "eleven");
-    tree->insert(8, "eight");
-    tree->insert(64, "sixty four");
-    tree->insert(5, "five");  
-    tree->insert(23, "twenty three");
-    tree->insert(6, "six");
-    tree->insert(19, "nineteen");
-    tree->insert(9, "nine");
-    tree->insert(7, "seven");   
-    tree->insert(31, "thirty one");  
-    tree->insert(45, "fourty five");
-    tree->insert(39, "thirty nine");    
-    tree->insert(60, "sixty");   
-    tree->insert(51, "fifty one");
-    tree->insert(97, "ninety seven");
-    tree->insert(77, "seventy seven");  
+    BPlusTree bp1(4);
 
-    tree->printKeys();
+    // Insert, remove and find
+    bp1.insert(7, "seven");
+    bp1.insert(1, "one");
+    bp1.insert(3, "three");
+    bp1.insert(9, "nine");
+    bp1.insert(5, "five");
+    cout << "find 3: " << bp1.find(3) << " (three)" << endl;
+    bp1.remove(7);
+    cout << "find 7: " << bp1.find(7) << " (<empty>)" << endl << endl;
 
-    tree->remove(45);   //Taking from wrong child, not updating parent pointer, also parent pointer still broken, but worked around it
-    tree->printKeys();
+    // Printing
+    bp1.printKeys();
+    cout << endl << "CHECK" << endl;
+    cout << "[5]" << endl;
+    cout << "[1 3] [5 9]" << endl << endl;
+    bp1.printValues();
+    cout << endl << "CHECK" << endl;
+    cout << "one" << endl << "three" << endl << "five" << endl << "nine" << endl;
+
+    // Copy constructor and op=
+    BPlusTree bp2(bp1);
+    BPlusTree bp3(7);
+    bp3.insert(13, "thirteen");
+    bp3 = bp1;
+
+    cout << endl << "simple test complete" << endl;
 }
-//LOOP STARTING TOO EARLY
