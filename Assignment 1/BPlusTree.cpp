@@ -56,9 +56,6 @@ void BPlusTree::removeFromNode(Node* node, int key){
 bool BPlusTree::remove(int key){
 }
 
-void BPlusTree::printLeaves(){
-}
-
 void BPlusTree::printKeys(){
     queue<Node*> nodesToPrint;
     nodesToPrint.push(root);

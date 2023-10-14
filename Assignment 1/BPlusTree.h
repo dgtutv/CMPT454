@@ -45,7 +45,6 @@ class BPlusTree {
         string find(int key);
         void printKeys();
         void printValues();
-        void printLeaves();     //Goes to the first leaf, then uses leaf pointers to get the rest
 
         //Helpers
         void printNodeKey(Node* node);  //Prints the keys of the specified node
