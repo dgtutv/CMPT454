@@ -103,14 +103,18 @@ bool BPlusTree::recursiveInsert(Node* insertionNode, int key, string value, Node
             else{
                 insertionNode->children[i+1] = child;
             }
+            return true;
         }
     }
 
     //If there is no room in the insertion node, split it
-
+    else{
+        splitNode(insertionNode);
+        return(recursiveInsert(insertionNode, key, value, child));
+    }
 }
 
 bool BPlusTree::insert(int key, string value){
     Node* leafToInsert = findLeaf(key);
-    return recursiveInsert(leafToInsert, int key, string value, nullptr);
+    return recursiveInsert(leafToInsert, key, value, nullptr);
 }
