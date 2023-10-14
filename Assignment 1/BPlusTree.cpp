@@ -54,7 +54,7 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
             rightNode->keyValues.insert(pair<int, string>(it->first, it->second));
             keysToRemove.push_back(it->first);    
         }
-        if(!leftNode->isLeaf && counter >= floor(leftNode->keyValues.size()/2)){
+        if(!leftNode->isLeaf && counter >= floor((maxNumPointers+1)/2)){
             rightNode->children.push_back(leftNode->children[counter]);
             pointersToRemove.push_back(leftNode->children[counter]);
         }
@@ -70,11 +70,7 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
         }
     }
     sort(leftNode->children.begin(), leftNode->children.end(), compareNodes);
-    sort(rightNode->children.begin(), rightNode->children.end(), compareNodes);
-
-    
-    //Give the first counter of the right container back to the left one
-      
+    sort(rightNode->children.begin(), rightNode->children.end(), compareNodes);      
 
     //If a parent does not exist, make an empty one
     if(leftNode == root){
