@@ -116,6 +116,7 @@ bool BPlusTree::recursiveInsert(Node* insertionNode, int key, string value, Node
 
 bool BPlusTree::splitNodeInsert(Node* leftNode, int key, string value, Node* child){
     Node* rightNode = new Node(maxNumKeys, rightNode->isLeaf);
+    rightNode->parent = leftNode->parent;
 
     //Duplicate our elements into an array one larger
     int overflowKeys[maxNumKeys+1];
@@ -158,14 +159,58 @@ bool BPlusTree::splitNodeInsert(Node* leftNode, int key, string value, Node* chi
         }
     }
 
-    //Empty the leftChild's arrays
-
-    //Iterate over our overflow arrays, and balance children
-    for(int i=0; i<maxNumKeys+1; i++){
-        if(i < ceil((maxNumKeys+1)/2)){
-
+    //Iterate over our overflow arrays, and balance nodes
+    int leftNodeKeys[maxNumKeys];
+    string leftNodeValues[maxNumKeys];
+    Node* leftNodeChildren[maxNumKeys+1];
+    int rightNodeKeys[maxNumKeys];
+    string rightNodeValues[maxNumKeys];
+    Node* rightNodeChildren[maxNumKeys+1];
+    int j=0;
+    if(leftNode->isLeaf){
+        for(int i=0; i<maxNumKeys+1; i++){
+            if(i > ceil((maxNumKeys+1)/2)){
+                leftNodeKeys[i] = overflowKeys[i];
+                leftNodeValues[i] = overflowValues[i];
+            }
+            else{
+                rightNodeKeys[j] = overflowKeys[i];
+                rightNodeValues[j] = overflowValues[i];
+                j++;
+            }
         }
     }
+    else{
+        int j=0;
+        for(int i=0; i<maxNumKeys+1; i++){
+            if(i < ceil(maxNumKeys/2)){
+                leftNodeKeys[i] = overflowKeys[i];
+            }
+            else if(i == ceil(maxNumKeys/2)){
+                recursiveInsert(leftNode->parent, overflowKeys[i], "", rightNode);
+            }
+            else{
+                rightNodeKeys[j] = overflowKeys[i];
+                j++;
+            }
+        }
+        j=0;
+        for(int i=0; i<maxNumKeys+2; i++){
+            if(i < ceil((maxNumKeys+2)/2)){
+                leftNodeChildren[i] = overflowChildren[i];
+            }
+            else{
+                rightNodeChildren[j] = overflowChildren[i];
+                j++;
+            }
+        }
+    }
+    leftNode->keys = leftNodeKeys;
+    leftNode->values = leftNodeValues;
+    leftNode->children = leftNodeChildren;
+    rightNode->keys = rightNodeKeys;
+    rightNode->values = rightNodeValues;
+    rightNode->children = rightNodeChildren; 
 
 }
 
