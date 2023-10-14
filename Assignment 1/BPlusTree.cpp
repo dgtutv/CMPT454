@@ -1,4 +1,6 @@
 #include "BPlusTree.h"
+#include <cmath>
+#include <iostream>>
 
 Node::Node(int n, bool isLeaf){
     keys = new int[n];
@@ -79,9 +81,9 @@ Node* BPlusTree::findLeaf(int key){
 bool BPlusTree::recursiveInsert(Node* insertionNode, int key, string value, Node* child){
     //If there is room in the insertionNode
     if(insertionNode->size < maxNumKeys){
-        //Find where to insert the key (and possibly value)
+        //Find where to insert the elements
         for(int i=0; i<insertionNode->size; i++){
-            //If needed, shove values right 
+            //If needed, shove elements right 
             if(key < insertionNode->keys[i]){
                 for(int j=insertionNode->size; j>=i; j--){
                     insertionNode->keys[j] = insertionNode->keys[j-1];
@@ -92,10 +94,9 @@ bool BPlusTree::recursiveInsert(Node* insertionNode, int key, string value, Node
                         insertionNode->children[j+1] = insertionNode->children[j];
                     }
                 }
-                
             }
 
-            //Insert the key
+            //Insert the elements
             insertionNode->keys[i] = key;
             if(insertionNode->isLeaf){
                 insertionNode->values[i] = value;
@@ -109,9 +110,63 @@ bool BPlusTree::recursiveInsert(Node* insertionNode, int key, string value, Node
 
     //If there is no room in the insertion node, split it
     else{
-        splitNode(insertionNode);
-        return(recursiveInsert(insertionNode, key, value, child));
+        return splitNodeInsert(insertionNode, key, value, child);
     }
+}
+
+bool BPlusTree::splitNodeInsert(Node* leftNode, int key, string value, Node* child){
+    Node* rightNode = new Node(maxNumKeys, rightNode->isLeaf);
+
+    //Duplicate our elements into an array one larger
+    int overflowKeys[maxNumKeys+1];
+    string overflowValues[maxNumKeys+1];
+    Node* overflowChildren[maxNumKeys+2];
+    for(int i=0; i<maxNumKeys; i++){
+        overflowKeys[i] = leftNode->keys[i];
+        if(leftNode->isLeaf){
+            overflowValues[i] = leftNode->values[i];
+        }
+    }
+    if(!leftNode->isLeaf){
+        for(int i=0; i<maxNumKeys+1; i++){
+            overflowChildren[i] = leftNode->children[i];
+        }
+    }
+
+    //Find where to insert the elements
+    for(int i=0; i<maxNumKeys+1; i++){
+        //If needed, shove elements right 
+        if(key < overflowKeys[i]){
+            for(int j=maxNumKeys+1; j>=i; j--){
+                overflowKeys[j] = overflowKeys[j-1];
+                if(leftNode->isLeaf){
+                    overflowValues[j] = overflowValues[j-1];
+                }
+                else{
+                    overflowChildren[j+1] = overflowChildren[j];
+                }
+            } 
+        }
+
+        //Insert the elements
+        overflowKeys[i] = key;
+        if(leftNode->isLeaf){
+            overflowValues[i] = value;
+        }
+        else{
+            overflowChildren[i+1] = child;
+        }
+    }
+
+    //Empty the leftChild's arrays
+
+    //Iterate over our overflow arrays, and balance children
+    for(int i=0; i<maxNumKeys+1; i++){
+        if(i < ceil((maxNumKeys+1)/2)){
+
+        }
+    }
+
 }
 
 bool BPlusTree::insert(int key, string value){
