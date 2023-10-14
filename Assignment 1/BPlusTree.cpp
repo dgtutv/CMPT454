@@ -230,7 +230,8 @@ bool BPlusTree::splitNodeInsert(Node* leftNode, int key, string value, Node* chi
 
 bool BPlusTree::insert(int key, string value){
     if(isEmpty){
-        Node* root = new Node(maxNumKeys, true);
+        Node* newRoot = new Node(maxNumKeys, true);
+        root = newRoot;
         root->keys[0] = key;
         root->values[0] = value;
         root->size++;
@@ -324,6 +325,7 @@ int main(int argc, char const *argv[]){
     tree->insert(2, "two");
     tree->insert(11, "eleven");
     tree->insert(8, "eight");
+    tree->printKeys();
     tree->insert(64, "sixty four");
     tree->insert(5, "five");  
     tree->insert(23, "twenty three");
