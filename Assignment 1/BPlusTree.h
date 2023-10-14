@@ -20,6 +20,7 @@ class BPlusTree{
     private:
         int maxNumKeys;
         Node* root;
+        bool isEmpty;
     public:
         BPlusTree(int n);     //Constructor
         BPlusTree(BPlusTree& treeToCopy);       //Copy constructor

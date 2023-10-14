@@ -13,10 +13,12 @@ Node::Node(int n, bool isLeaf){
 
 BPlusTree::BPlusTree(int n){
     maxNumKeys = n;
+    isEmpty = true;
 }
 
 BPlusTree::BPlusTree(BPlusTree& treeToCopy){
     maxNumKeys = treeToCopy.maxNumKeys;
+    isEmpty = treeToCopy.isEmpty;
     root = copyNode(treeToCopy.root);
 }
 
@@ -41,6 +43,7 @@ BPlusTree& BPlusTree::operator=(BPlusTree& treeToCopy){
     if(this != &treeToCopy){
         this->~BPlusTree();
         this->maxNumKeys = treeToCopy.maxNumKeys;
+        isEmpty = treeToCopy.isEmpty;
         this->root = copyNode(treeToCopy.root);
     }
     return *this;
@@ -226,6 +229,15 @@ bool BPlusTree::splitNodeInsert(Node* leftNode, int key, string value, Node* chi
 }
 
 bool BPlusTree::insert(int key, string value){
+    if(isEmpty){
+        Node* root = new Node(maxNumKeys, true);
+        root->keys[0] = key;
+        root->values[0] = value;
+        root->size++;
+        isEmpty = false;
+        return true;
+    }
+
     Node* leafToInsert = findLeaf(key);
     return recursiveInsert(leafToInsert, key, value, nullptr);
 }
