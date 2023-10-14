@@ -20,7 +20,57 @@ BPlusTree::Node::~Node(){}  //Data is redirected outside of the class, not delet
 /*----------------------------------------BPlusTree-------------------------------------*/
 BPlusTree::BPlusTree(int maxNumPointers) : maxNumPointers(maxNumPointers){};
 
-void BPlusTree::splitNode(Node* leftNode, int key, string value){
+void BPlusTree::splitNode(Node* leftNode, int key, void* pointer){
+    //Create a sibling node
+    Node* rightNode = new Node(leftNode->parent, leftNode->isLeaf, this);
+    allNodes.push_back(rightNode);
+
+    //Insert the new key and pointer into the left node
+    leftNode->keyPointers.insert(pair<int, void*>(key, pointer));
+
+    //Balance the siblings
+    int counter = 0;
+    vector<int> keysToRemove;
+    for(auto it = leftNode->keyPointers.begin(); it != leftNode->keyPointers.end(); it++){
+        if(counter >= floor(maxNumPointers/2)){
+            rightNode->keyPointers.insert(pair<int, void*>(key, pointer));
+            keysToRemove.push_back(it->first);
+        }
+        counter++;
+    }
+
+    //Remove extraneous data from the left node
+    for(int i=0; i<keysToRemove.size(); i++){
+        leftNode->keyPointers.erase(keysToRemove[i]);
+    }
+
+    //If a parent does not exist, make one
+    if(leftNode == root){
+        Node* newParent = new Node(nullptr, false, this);
+        allNodes.push_back(newParent);
+        leftNode->parent = newParent;
+        newParent->firstChild = leftNode;
+        root = newParent;
+        leftNode->parent->keyPointers.insert(pair<int, void*>(rightNode->keyPointers.begin()->first, (void*)rightNode));
+    }
+
+    //If there is a parent, but it is full, recursively call splitNode on the parent
+    else if(leftNode->parent->isFull()){
+        splitNode(leftNode->parent, rightNode->keyPointers.begin()->first, rightNode);
+    }
+
+    //Otherwise, insert rightNode's first key, and a pointer to rightNode into the parent
+    else{
+        leftNode->parent->keyPointers.insert(pair<int, void*>(rightNode->keyPointers.begin()->first, (void*)rightNode));
+    }
+
+    //Set rightNode's (the new sibling's) parent
+    rightNode->parent = leftNode->parent;
+
+    //If rightNode is not a leaf, and it has more than one key, remove rightNode's first keyPointer pair
+    if(!(rightNode->isLeaf) && (rightNode->keyPointers.size() > 1)){
+        rightNode->keyPointers.erase(rightNode->keyPointers.begin()->first);
+    }
 }
 
 BPlusTree::Node* BPlusTree::findNode(int key){
