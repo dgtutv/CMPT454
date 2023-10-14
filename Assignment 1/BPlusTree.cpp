@@ -127,6 +127,7 @@ string BPlusTree::find(int key){
 }
 
 bool BPlusTree::insert(int key, string value){
+
     //If the root does not exist, enter the key/value into it 
     if(root == nullptr){
         root = new Node(nullptr, true, this);
@@ -136,6 +137,7 @@ bool BPlusTree::insert(int key, string value){
     }
 
     //Check if the key is already present
+    string test = find(key);
     if(find(key).size() != 0){
         return false;
     }

@@ -5,6 +5,7 @@ using namespace std;
 
 class BPlusTree {
     public:
+        
         class Node{
             private:
                 Node* parent;
@@ -14,7 +15,7 @@ class BPlusTree {
             public:
                 //Public data
                 Node* firstChild;       //Only applicable if the node is not a leaf
-                map<int, void*> keyPointers;     //Here I use a map to store key/pointer pairs, pointers will be values if node is a leaf
+                map<int, void*> keyPointers;     //Here I use a map to store key/pointer pairs, pointers point to values if node is a leaf
 
                 //Constructor
                 Node(Node* parent, bool isLeaf, BPlusTree* tree);    
@@ -31,6 +32,7 @@ class BPlusTree {
     public:
         Node* root;
         vector<Node*> allNodes;       //Used for memory purposes
+        vector<string> file;       
         int maxNumPointers; 
 
         //Constructor
