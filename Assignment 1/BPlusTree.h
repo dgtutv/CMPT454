@@ -20,7 +20,6 @@ class BPlusTree {
                 Node(Node* parent, bool isLeaf, BPlusTree* tree);    
                 
                 //Helpers
-                bool isOverflow() const;        //Checks if the Node is past full
                 bool isFull() const;        //Checks if the Node is full
                 friend class BPlusTree;
 

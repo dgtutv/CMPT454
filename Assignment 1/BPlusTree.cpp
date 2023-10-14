@@ -12,9 +12,6 @@ bool compareNodes(const BPlusTree::Node* a, const BPlusTree::Node* b){
 /*------------------------------------------Node----------------------------------------*/
 BPlusTree::Node::Node(Node* parent, bool isLeaf, BPlusTree* tree) : parent(parent), isLeaf(isLeaf), tree(tree){};
 
-bool BPlusTree::Node::isOverflow() const{
-}
-
 bool BPlusTree::Node::isFull() const{
 }
 
@@ -33,6 +30,26 @@ string BPlusTree::find(int key){
 }
 
 bool BPlusTree::insert(int key, string value){
+    //If the root does not exist, enter the key/value into it 
+    if(root == nullptr){
+        root = new Node(nullptr, true, this);
+        allNodes.push_back(root);
+        pair<int, void*> keyValue = pair<int, void*>(key, (void*)&value);
+        root->keyPointers.insert(keyValue);
+    }
+
+    //Check if the key is already present
+    if(find(key).size() != 0){
+        return false;
+    }
+
+    //Otherwise, find where to insert our pair
+    else{
+        Node* insertionNode = findNode(key);
+        if(insertionNode->isFull()){
+
+        }
+    }
 }  
 
 int BPlusTree::findIndexOfNodeInParent(Node* child){
@@ -77,9 +94,9 @@ void BPlusTree::printKeys(){
                 }
             }
         }
-        cout<<"--------------------------------\n"; 
+        cout<<endl<<endl; 
     } 
-    cout<<
+    cout<<"--------------------------------\n"; 
 }
 
 void BPlusTree::printNodeKey(Node* node){
@@ -117,6 +134,6 @@ int main(int argc, char const *argv[]){
 
     tree->printKeys();
 
-    tree->remove(45);   //Taking from wrong child, not updating parent pointer, also parent pointer still broken, but worked around it
-    tree->printKeys();
+    // tree->remove(45);   //Taking from wrong child, not updating parent pointer, also parent pointer still broken, but worked around it
+    // tree->printKeys();
 }
