@@ -349,11 +349,11 @@ void BPlusTree::removeFromNode(Node* node, int key, Node* pointer){
             }
         }
         //If the left sibling exists and is more than half full, redistribute from the left sibling
-        if(leftSibling != nullptr && leftSibling->keyValues.size() > floor((maxNumPointers-1)/2)){
+        if(leftSibling != nullptr && leftSibling->keyValues.size() >= floor((maxNumPointers-1)/2)){
             redistribute(leftSibling, node, true);
         }
         //Otherwise, if the right sibling exists and is more than half full, redistribute from the right sibling
-        else if(rightSibling != nullptr && rightSibling->keyValues.size() > floor((maxNumPointers-1)/2)){
+        else if(rightSibling != nullptr && rightSibling->keyValues.size() >= floor((maxNumPointers-1)/2)){
             redistribute(rightSibling, node, false);
         }
         //Otherwise, if the left sibling exists, but is exactly half full, coalesce with the left sibling
@@ -481,6 +481,8 @@ int main(int argc, char const *argv[]){
     tree->insert(51, "fifty one");
     tree->insert(97, "ninety seven");
     tree->insert(77, "seventy seven");  
+
+    tree->printKeys();
 
     tree->remove(45);   //Taking from wrong child, not updating parent pointer, also parent pointer still broken, but worked around it
     tree->printKeys();

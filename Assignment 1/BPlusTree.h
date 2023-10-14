@@ -58,6 +58,7 @@ class BPlusTree {
         int findAssociatedKeyOfNodeInParent(Node* child);
         Node* findLeafToLeftOfNode(Node* node);
         void updateParentPointers(Node* parent);        //Iterates over the entire tree and updates the parent pointers for all nodes, pass in the root
+        void fixPointers();         //Ensures that the tree is properly linked in terms of children and parents
 
         //Destructor
         ~BPlusTree();
