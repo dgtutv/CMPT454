@@ -60,7 +60,29 @@ void BPlusTree::printLeaves(){
 }
 
 void BPlusTree::printKeys(){
+    queue<Node*> nodesToPrint;
+    nodesToPrint.push(root);
 
+    //Iterate over the nodesToPrint queue
+    while(!nodesToPrint.empty()){
+        int sizeOfCurrentLevel = nodesToPrint.size();
+
+        //Print the current level
+        for(int i=0; i<sizeOfCurrentLevel; i++){
+            Node* currentNode = nodesToPrint.front();
+            nodesToPrint.pop();
+            printNodeKey(currentNode);
+
+            //Add the children of the currentNode to the queue
+            if(!currentNode->isLeaf){
+                for(auto it = currentNode->keyPointers.begin(); it != currentNode->keyPointers.end(); it++){
+                    nodesToPrint.push((Node*)it->second);
+                }
+            }
+        }
+        cout<<"--------------------------------\n"; 
+    } 
+    cout<<
 }
 
 void BPlusTree::printNodeKey(Node* node){
