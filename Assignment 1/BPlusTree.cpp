@@ -54,7 +54,7 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
             rightNode->keyValues.insert(pair<int, string>(it->first, it->second));
             keysToRemove.push_back(it->first);    
         }
-        if(!leftNode->isLeaf && counter >= floor(leftNode->keyValues.size()/2)){
+        if(!leftNode->isLeaf && counter > floor(leftNode->keyValues.size()/2)){
             rightNode->children.push_back(leftNode->children[counter]);
             pointersToRemove.push_back(leftNode->children[counter]);
         }
@@ -487,3 +487,4 @@ int main(int argc, char const *argv[]){
     tree->remove(45);   //Taking from wrong child, not updating parent pointer, also parent pointer still broken, but worked around it
     tree->printKeys();
 }
+//LOOP STARTING TOO EARLY
