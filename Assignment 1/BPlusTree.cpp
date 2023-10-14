@@ -148,7 +148,7 @@ bool BPlusTree::insert(int key, string value){
     else{
         Node* insertionNode = findNode(key);
         if(insertionNode->isFull()){
-            splitNode(insertionNode, key, value);
+            splitNode(insertionNode, key, (void*)&value);
         }
         else{
             pair<int, void*> keyValue = pair<int, void*>(key, (void*)&value);
