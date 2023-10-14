@@ -398,16 +398,6 @@ void BPlusTree::printLeaves(){
     }
 }
 
-int BPlusTree::getHeight(){
-    Node* currentNode = root;
-    int numOfRows = 1;
-    while(!currentNode->isLeaf){
-        numOfRows++;
-        currentNode = currentNode->children[0];
-    }
-    return numOfRows;
-}
-
 void BPlusTree::printKeys(){
     queue<Node*> nodesToPrint;
     nodesToPrint.push(root);
