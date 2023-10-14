@@ -10,7 +10,9 @@ class Node{
         int size;
         bool isLeaf;
     public:
-        Node(int n); 
+        Node(int n, bool isLeaf); 
+
+    friend class BPlusTree;
 };
 
 class BPlusTree{
