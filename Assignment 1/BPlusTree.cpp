@@ -54,7 +54,7 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
             rightNode->keyValues.insert(pair<int, string>(it->first, it->second));
             keysToRemove.push_back(it->first);    
         }
-        if(!leftNode->isLeaf && counter >= floor((maxNumPointers+1)/2)){
+        if(!leftNode->isLeaf && counter >= floor(leftNode->keyValues.size()/2)){
             rightNode->children.push_back(leftNode->children[counter]);
             pointersToRemove.push_back(leftNode->children[counter]);
         }
@@ -492,6 +492,12 @@ void BPlusTree::printNodeValue(Node* node){
         }
     }
     cout<<"|";
+}
+
+BPlusTree::~BPlusTree(){
+    for(Node* node : allNodes){
+        delete node;
+    }
 }
 
 //Tester code
