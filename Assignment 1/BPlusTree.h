@@ -28,10 +28,12 @@ class BPlusTree {
                 ~Node();
         };
     private:
+
+    public:
         Node* root;
         vector<Node*> allNodes;       //Used for memory purposes
         int maxNumPointers; 
-    public:
+
         //Constructor
         BPlusTree(int maxNumPointers);  //Maximum number of entries is maxNumPointers-1
 

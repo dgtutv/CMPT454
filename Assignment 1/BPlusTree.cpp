@@ -73,8 +73,11 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
     sort(rightNode->children.begin(), rightNode->children.end(), compareNodes);
 
     
-    //Give the first counter of the right container back to the left one
-      
+    //Give the first pointer of the right container back to the left one
+    if(rightNode->children.size() > 0){
+        leftNode->children.push_back(*(rightNode->children.begin()));
+        rightNode->children.erase(rightNode->children.begin());
+    }
 
     //If a parent does not exist, make an empty one
     if(leftNode == root){
@@ -461,7 +464,7 @@ int main(int argc, char const *argv[]){
     tree->insert(60, "sixty");   
     tree->insert(51, "fifty one");
     tree->insert(97, "ninety seven");
-    tree->insert(77, "seventy seven");  //Pointers are breaking here, when I split the parent block, the 45 pointer is given to the new block, rather than staying with the old
+    tree->insert(77, "seventy seven");
 
     tree->remove(45);   //Not being removed for whatever reason
     tree->printKeys();
