@@ -331,17 +331,18 @@ void BPlusTree::removeFromNode(Node* node, int key, Node* pointer){
     }
 
     //If the node is less than half full
-    if(node->keyValues.size() < floor((maxNumPointers-1)/2)){
+    cout<<node->keyValues.size()<<endl;
+    if(node->keyValues.size() <= floor((maxNumPointers-1)/2)){
         //Find left and right siblings
         Node* leftSibling = nullptr;
         Node* rightSibling = nullptr;
         Node* parent = node->parent;
         for(auto it = parent->children.begin(); it != parent->children.end(); it++){
             if((*it) == node){
-                if(*prev(it) != nullptr){
+                if(it!=parent->children.begin()){
                     leftSibling = *prev(it);
                 }
-                if(*next(it) != nullptr){
+                if(it!=parent->children.end()-1){
                     rightSibling = *next(it);
                 }
                 break;
@@ -369,6 +370,24 @@ void BPlusTree::removeFromNode(Node* node, int key, Node* pointer){
 bool BPlusTree::remove(int key){
     //Find the associated leaf node
     Node* leaf = findNode(key);
+    bool keyIsInNode = false;
+    while(!keyIsInNode){
+        for(auto it=leaf->keyValues.begin(); it!=leaf->keyValues.end(); it++){
+            if(it->first == key){
+                keyIsInNode = true;
+            }
+        }
+        if(!keyIsInNode){
+            leaf=leaf->nextLeaf;
+        }
+        if(leaf==nullptr){
+            Node* currentNode = root;
+            while(!currentNode->isLeaf){
+                currentNode=currentNode->children[0];
+            }
+        }
+    }
+    
 
     if(leaf != nullptr){
         removeFromNode(leaf, key, nullptr);
@@ -461,8 +480,8 @@ int main(int argc, char const *argv[]){
     tree->insert(60, "sixty");   
     tree->insert(51, "fifty one");
     tree->insert(97, "ninety seven");
-    tree->insert(77, "seventy seven");  //Pointers are breaking here, when I split the parent block, the 45 pointer is given to the new block, rather than staying with the old
+    tree->insert(77, "seventy seven");  
 
-    tree->remove(45);   //Not being removed for whatever reason
+    tree->remove(45);   //Taking from wrong child, not updating parent pointer, also parent pointer still broken, but worked around it
     tree->printKeys();
 }
