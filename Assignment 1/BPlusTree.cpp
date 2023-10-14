@@ -70,6 +70,11 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
         }
     }
     sort(leftNode->children.begin(), leftNode->children.end(), compareNodes);
+    sort(rightNode->children.begin(), rightNode->children.end(), compareNodes);
+
+    
+    //Give the first counter of the right container back to the left one
+      
 
     //If a parent does not exist, make an empty one
     if(leftNode == root){
