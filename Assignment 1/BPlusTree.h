@@ -37,6 +37,7 @@ class BPlusTree{
         Node* findLeaf(int key);
         Node* copyNode(Node* nodeToCopy);
         void recursiveDelete(Node* node);
+        bool recursiveInsert(Node* insertionNode, int key, string value, Node* child);
         bool insertInLeaf(Node* leftNode, int key, string value);
         bool insertInterior(Node* leftNode, int key, Node* child);
         bool redistribute(Node* victim, Node* receiver);

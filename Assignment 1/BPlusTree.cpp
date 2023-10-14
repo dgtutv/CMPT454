@@ -9,7 +9,7 @@ Node::Node(int n, bool isLeaf){
 }
 
 BPlusTree::BPlusTree(int n){
-    maxNumKeys = n+1;
+    maxNumKeys = n;
 }
 
 BPlusTree::BPlusTree(BPlusTree& treeToCopy){
@@ -18,7 +18,7 @@ BPlusTree::BPlusTree(BPlusTree& treeToCopy){
 }
 
 Node* BPlusTree::copyNode(Node* nodeToCopy){
-    Node* newNode = new Node(maxNumKeys-1, nodeToCopy->isLeaf);
+    Node* newNode = new Node(maxNumKeys, nodeToCopy->isLeaf);
     newNode->size = nodeToCopy->size;
     newNode->parent = nodeToCopy->parent;
     for(int i=0; i<newNode->size; i++){
@@ -76,6 +76,41 @@ Node* BPlusTree::findLeaf(int key){
     return(currentNode);
 }
 
-bool BPlusTree::insert(int key, string value){
+bool BPlusTree::recursiveInsert(Node* insertionNode, int key, string value, Node* child){
+    //If there is room in the insertionNode
+    if(insertionNode->size < maxNumKeys){
+        //Find where to insert the key (and possibly value)
+        for(int i=0; i<insertionNode->size; i++){
+            //If needed, shove values right 
+            if(key < insertionNode->keys[i]){
+                for(int j=insertionNode->size; j>=i; j--){
+                    insertionNode->keys[j] = insertionNode->keys[j-1];
+                    if(insertionNode->isLeaf){
+                        insertionNode->values[j] = insertionNode->values[j-1];
+                    }
+                    else{
+                        insertionNode->children[j+1] = insertionNode->children[j];
+                    }
+                }
+                
+            }
 
+            //Insert the key
+            insertionNode->keys[i] = key;
+            if(insertionNode->isLeaf){
+                insertionNode->values[i] = value;
+            }
+            else{
+                insertionNode->children[i+1] = child;
+            }
+        }
+    }
+
+    //If there is no room in the insertion node, split it
+
+}
+
+bool BPlusTree::insert(int key, string value){
+    Node* leafToInsert = findLeaf(key);
+    return recursiveInsert(leafToInsert, int key, string value, nullptr);
 }
