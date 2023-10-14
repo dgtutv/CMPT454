@@ -48,14 +48,15 @@ void BPlusTree::splitNode(Node* leftNode, int key, string value){
     leftNode->keyValues.insert(pair<int, string>(key, value));
     
     //Balance the siblings
+    sort(leftNode->children.begin(), leftNode->children.end(), compareNodes);
     for(map<int, string>::iterator it = leftNode->keyValues.begin(); it != leftNode->keyValues.end(); it++){
         if(counter >= floor(leftNode->keyValues.size()/2)){
             rightNode->keyValues.insert(pair<int, string>(it->first, it->second));
-            keysToRemove.push_back(it->first);
-            if(!leftNode->isLeaf){
-                rightNode->children.push_back(leftNode->children[counter]);
-                pointersToRemove.push_back(leftNode->children[counter]);
-            }
+            keysToRemove.push_back(it->first);    
+        }
+        if(!leftNode->isLeaf && counter >= floor(leftNode->keyValues.size()/2)){
+            rightNode->children.push_back(leftNode->children[counter]);
+            pointersToRemove.push_back(leftNode->children[counter]);
         }
         counter++;
     }
