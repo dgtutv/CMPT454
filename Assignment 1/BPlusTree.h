@@ -41,4 +41,6 @@ class BPlusTree{
         bool splitNodeInsert(Node* leftNode, int key, string value, Node* child);
         bool redistribute(Node* victim, Node* receiver);
         bool coalesce(Node* victim, Node* receiver);
-}
+        void printNodeKey(Node* node);
+        void printNodeValue(Node* node);
+};
