@@ -27,6 +27,16 @@ BPlusTree::Node* BPlusTree::findNode(int key){
 }
 
 string BPlusTree::find(int key){
+    //Find the leaf that the key is in
+    Node* node = findNode(key);
+
+    //If the key was not found, return an empty string
+    if(node == nullptr){
+        return "";
+    }
+
+    //Otherwise, return the value corresponding with the key in leaf
+    return *(string*)node->keyPointers.find(key)->second;
 }
 
 bool BPlusTree::insert(int key, string value){
